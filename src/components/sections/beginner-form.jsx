@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { siteConfig } from "@/config/site";
-import { Trash2 } from "lucide-react";
+import { CircleCheckBig, Trash2 } from "lucide-react";
 import {
   CURRENT_STAGES,
   FUNDING_HISTORY,
@@ -30,6 +30,13 @@ const emptyFounder = { name: "", email: "", phone: "", background: "" };
  */
 export function BeginnerForm() {
   const [submitted, setSubmitted] = useState(false);
+
+  /* The panel replaces a form that is taller than the screen, so whoever pressed
+     submit at the bottom would be left staring at blank space below it. */
+  const doneRef = useRef(null);
+  useEffect(() => {
+    if (submitted) doneRef.current?.scrollIntoView({ block: "center" });
+  }, [submitted]);
 
   const {
     register,
@@ -63,6 +70,7 @@ export function BeginnerForm() {
       });
       if (!res.ok) throw new Error(`Request failed (${res.status})`);
       setSubmitted(true);
+      toast.success("Registration received.");
     } catch {
       toast.error(
         `Could not send your registration. Please try again, or email ${siteConfig.contact.email}.`,
@@ -72,8 +80,9 @@ export function BeginnerForm() {
 
   if (submitted) {
     return (
-      <div className="rounded-card border border-border bg-muted p-8">
-        <h2 className="text-h5">Registration received</h2>
+      <div ref={doneRef} className="rounded-card border border-border bg-muted p-8">
+        <CircleCheckBig aria-hidden="true" className="size-9 text-primary" />
+        <h2 className="mt-4 text-h5">Registration received</h2>
         <p className="mt-3 text-muted-foreground">
           Thanks for registering. The Startup E team will follow up on mentoring, compliance support
           and the KSUM seed capital routes open to you.

@@ -5,9 +5,11 @@
  * use fit "cover".
  */
 export const message = {
-  heading: "A message from Shafi Parambil MP",
+  heading: "A message from Hon. Shafi Parambil, MP",
+  /* Condensed from the MP's full message: the gap, what the mission is, the
+     closing line he signs off with. */
   quote:
-    "The message from the MP's office goes here — two to three sentences on why this movement exists and what it should change for Kerala's young people.",
+    "Kerala has always overflowed with raw talent and brilliant ideas — what our young people lacked was the ecosystem, mentorship and institutional support to turn that potential into thriving enterprises. Startup E-Plus was created to bridge that gap: a long-term commitment that walks with you from your first spark of an idea to a fully registered, successful business. Together, let's build Kerala's future, with Kerala's own hands.",
   name: "Shafi Parambil",
   role: "Member of Parliament, Vadakara",
   image: {

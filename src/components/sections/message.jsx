@@ -43,7 +43,7 @@ export function Message() {
               quote, kept small and centred so it never fills a whole phone
               screen. From lg it moves back into the left column and keeps the
               Figma 480 x 546 ratio at 86% of that column. */}
-          <div className="relative mx-auto aspect-[480/546] w-full max-w-[15rem] overflow-hidden rounded-card-lg bg-brand-500/11 sm:max-w-[18rem] lg:order-first lg:mx-0 lg:w-[86%] lg:max-w-none lg:justify-self-end">
+          <div className="relative mx-auto aspect-[480/546] w-full overflow-hidden rounded-card-lg bg-brand-500/11 sm:max-w-[22rem] lg:order-first lg:mx-0 lg:w-[86%] lg:max-w-none lg:justify-self-end">
             {/* The portrait is bottom-aligned inside this inset, which leaves the
                 headroom the design keeps above the head (Figma: ~9% of the card).
                 next/image `fill` writes inset:0 inline, so the offset has to live
@@ -53,7 +53,7 @@ export function Message() {
                 src={image.src}
                 alt={image.alt}
                 fill
-                sizes="(min-width: 64rem) 38vw, (min-width: 40rem) 18rem, 15rem"
+                sizes="(min-width: 64rem) 38vw, (min-width: 40rem) 22rem, 100vw"
                 className={cn(
                   image.fit === "contain" ? "object-contain object-bottom" : "object-cover",
                 )}

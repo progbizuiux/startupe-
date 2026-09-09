@@ -1,8 +1,10 @@
 /**
  * Progbiz CRM — Third Party Leads API.
  *
- * One POST per registration to `/third-party-leads`, authenticated with the
- * integration key in `X-Api-Key`. The CRM only really models a contact plus free
+ * One POST per registration to the CRM's website enquiry endpoint (see
+ * CRM_LEADS_URL - /api/website/save-enquiry, not the /webhook/third-party-leads
+ * path the PDF gives, which rejects our key), authenticated with the
+ * integration key in `X-API-Key`. The CRM only really models a contact plus free
  * text, so each portal's answers are mapped twice: the ones it has real columns
  * for (name, email, phone, city/state, gender) go in the body, and everything
  * else goes to `additionalData`, which the CRM side maps to its own fields.
@@ -25,9 +27,18 @@ function config() {
   const branchId = Number(process.env.CRM_BRANCH_ID);
 
   if (!url || !apiKey || !Number.isInteger(branchId)) return null;
-  /* leadSourceName is an *override*: sent only when asked for, so the CRM's own
-     source for this integration stays in charge by default */
-  return { url, apiKey, branchId, leadSource: process.env.CRM_LEAD_SOURCE || undefined };
+  return {
+    url,
+    apiKey,
+    branchId,
+    /* leadSourceName is an *override*: sent only when asked for, so the CRM's own
+       source for this integration stays in charge by default */
+    leadSource: process.env.CRM_LEAD_SOURCE || undefined,
+    /* Where the CRM emails the new-lead notification. Required - the endpoint
+       answers 400 "The value cannot be an empty string. (Parameter 'addresses')"
+       without it. */
+    notifyEmail: process.env.CRM_NOTIFY_EMAIL || undefined,
+  };
 }
 
 export const isCrmConfigured = () => config() !== null;
@@ -189,6 +200,7 @@ export function buildLead(portal, data) {
     ...(process.env.CRM_ADDITIONAL_DATA !== "off" && { additionalData }),
     branchID: settings.branchId,
     ...(settings.leadSource && { leadSourceName: settings.leadSource }),
+    ...(settings.notifyEmail && { ToAddress: settings.notifyEmail }),
     formName: FORM_NAME[portal],
   };
 
@@ -219,7 +231,7 @@ export async function sendLead(portal, data) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "X-Api-Key": settings.apiKey,
+        "X-API-Key": settings.apiKey,
         /* Node's fetch sends `Accept-Language: *` unless told otherwise, and the
            CRM answers 500 with an empty body to any request carrying it - the
            wildcard blows up culture parsing on their side. The identical request

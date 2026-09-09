@@ -28,7 +28,7 @@ export function Cta() {
       <section
         id="cta"
         style={cta.background.color ? { backgroundColor: cta.background.color } : undefined}
-        className="relative overflow-hidden bg-indigo py-10 lg:py-0"
+        className="relative mb-section overflow-hidden bg-indigo py-10 lg:py-0"
       >
         <Container className="relative z-10">
           <div className="text-background lg:flex lg:min-h-[381px] lg:max-w-[46%] lg:flex-col lg:justify-center lg:py-10">
@@ -70,7 +70,7 @@ export function Cta() {
   }
 
   return (
-    <section id="cta" className="overflow-hidden bg-indigo py-10 lg:py-0">
+    <section id="cta" className="mb-section overflow-hidden bg-indigo py-10 lg:py-0">
       <Container>
         {/* From lg the cluster sets the band height (Figma: 381px); the copy keeps
             its own padding so it never touches the edges on narrower screens. */}

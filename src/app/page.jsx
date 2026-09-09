@@ -15,7 +15,7 @@ export default function HomePage() {
       <Partners />
       <Join />
       <Cta />
-      <Faq />
+      {/* <Faq /> */}
     </>
   );
 }

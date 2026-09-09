@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { CircleCheckBig } from "lucide-react";
 import { toast } from "sonner";
 import { siteConfig } from "@/config/site";
 import {
@@ -29,6 +30,13 @@ import { Field, controlClasses, describedBy } from "@/components/ui/field";
  */
 export function AspirantForm() {
   const [submitted, setSubmitted] = useState(false);
+
+  /* The panel replaces a form that is taller than the screen, so whoever pressed
+     submit at the bottom would be left staring at blank space below it. */
+  const doneRef = useRef(null);
+  useEffect(() => {
+    if (submitted) doneRef.current?.scrollIntoView({ block: "center" });
+  }, [submitted]);
 
   const {
     register,
@@ -71,6 +79,7 @@ export function AspirantForm() {
       });
       if (!res.ok) throw new Error(`Request failed (${res.status})`);
       setSubmitted(true);
+      toast.success("Registration received.");
     } catch {
       toast.error(
         `Could not send your registration. Please try again, or email ${siteConfig.contact.email}.`,
@@ -80,8 +89,9 @@ export function AspirantForm() {
 
   if (submitted) {
     return (
-      <div className="rounded-card border border-border bg-muted p-8">
-        <h2 className="text-h5">Registration received</h2>
+      <div ref={doneRef} className="rounded-card border border-border bg-muted p-8">
+        <CircleCheckBig aria-hidden="true" className="size-9 text-primary" />
+        <h2 className="mt-4 text-h5">Registration received</h2>
         <p className="mt-3 text-muted-foreground">
           Thanks for registering. The Startup E team will be in touch on WhatsApp with your nearest
           Campus E-Club and the next Zonal Idea Hackathon date.
