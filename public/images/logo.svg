@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="196" height="41" viewBox="0 0 196 41" fill="none" role="img" aria-label="Startup E">
+  <!-- DUMMY LOGO - replace this file with the real mark exported from Figma.
+       Keep the viewBox ratio (or update width/height in src/components/ui/logo.jsx).
+       Single colour so `dark:invert` on the <Image> keeps it visible on dark backgrounds. -->
+  <path
+    d="M4 36 L14 9 L24 30 L34 9 L44 36"
+    fill="none"
+    stroke="#111111"
+    stroke-width="7"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+  <text
+    x="62"
+    y="29"
+    textLength="130"
+    lengthAdjust="spacingAndGlyphs"
+    font-family="Inter, 'Segoe UI', Arial, Helvetica, sans-serif"
+    font-size="23"
+    font-weight="700"
+    letter-spacing="0.5"
+    fill="#111111"
+  >STARTUP E</text>
+</svg>

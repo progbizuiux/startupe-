@@ -1,0 +1,418 @@
+/* ============================================================================
+   DESIGN TOKENS  (single source of truth)
+   ----------------------------------------------------------------------------
+   1. :root   raw palette + semantic LIGHT theme + layout / type / motion vars
+   2. .dark   semantic overrides for DARK theme (toggled by next-themes)
+   3. @theme  maps tokens to Tailwind utilities, e.g.
+                bg-background   text-brand-600   font-heading   text-h1
+                max-w-content   rounded-card     shadow-card    ease-out-expo
+                h-header        py-section       px-gutter      animate-fade-up
+
+   Edit values HERE. Components should never hard-code colors or sizes.
+   Typography is taken from the Figma landing page:
+     headings = Inter, body/labels = Satoshi, text color #111.
+   ============================================================================ */
+
+:root {
+  /* ---------- Brand blue (CTA buttons) ----------
+     500 is the brand blue; the rest of the scale is tinted / shaded from it. */
+  --brand-50: #eef5fe;
+  --brand-100: #d3e3fb;
+  --brand-200: #b1cff8;
+  --brand-300: #84b6f5;
+  --brand-400: #589ef1;
+  --brand-500: #207ded; /* primary brand blue */
+  --brand-600: #1b6ac9;
+  --brand-700: #1658a6;
+  --brand-800: #134b8e;
+  --brand-900: #103f77;
+  --brand-950: #0a284c;
+
+  /* ---------- Ink / neutral ---------- */
+  --ink-0: #ffffff;
+  --ink-50: #fafafa;
+  --ink-100: #f4f4f5;
+  --ink-200: #e4e4e7;
+  --ink-300: #d4d4d8;
+  --ink-400: #a1a1aa;
+  --ink-500: #71717a;
+  --ink-600: #52525b;
+  --ink-700: #3f3f46;
+  --ink-800: #27272a;
+  --ink-900: #18181b;
+  --ink-950: #111111; /* Figma text color #111 */
+  --ink-1000: #0a0a0a; /* near-black section backgrounds (Figma "about" band) */
+
+  /* ---------- Highlights (text boxes in the "about" headline; approximated from the design) ---------- */
+  --highlight-pink: #ff1ec0;
+  --highlight-yellow: #f5d737;
+  /* Accent for step numbers / labels and the "Register Now" button. Kept as its
+     own name for the places the design calls "indigo", but set to the brand blue
+     so the site has one blue rather than two. */
+  --indigo: #207ded;
+  /* Light violet used for the gradient stroke on the "what Startup E is" pillar cards */
+  --violet-500: #a78bfa;
+
+  /* ---------- Gold accent (premium / highlights) ---------- */
+  --gold-100: #faf3d6;
+  --gold-300: #e9d38a;
+  --gold-500: #c9a227;
+  --gold-700: #8f6f12;
+
+  /* ---------- Status ---------- */
+  --success: #16a34a;
+  --success-soft: #dcfce7;
+  --warning: #d97706;
+  --warning-soft: #fef3c7;
+  --danger: #dc2626;
+  --danger-soft: #fee2e2;
+  --info: #2563eb;
+  --info-soft: #dbeafe;
+
+  /* ---------- Semantic: LIGHT ---------- */
+  --background: var(--ink-0);
+  --foreground: var(--ink-950);
+  --muted: var(--ink-100);
+  --muted-foreground: var(--ink-500);
+  --card: var(--ink-0);
+  --card-foreground: var(--ink-950);
+  --popover: var(--ink-0);
+  --popover-foreground: var(--ink-950);
+  --border: var(--ink-200);
+  --input: var(--ink-300);
+  --ring: var(--brand-500);
+  --primary: var(--brand-500); /* CTA buttons, e.g. "Join the Movement" */
+  --primary-foreground: var(--ink-0);
+  --secondary: var(--ink-100);
+  --secondary-foreground: var(--ink-900);
+  --accent: var(--brand-500);
+  --accent-foreground: var(--ink-0);
+  --destructive: var(--danger);
+  --destructive-foreground: var(--ink-0);
+
+  /* ---------- Font stacks ----------
+     Inter is loaded by next/font (src/lib/fonts.js) -> var(--font-inter).
+     Satoshi is loaded from Fontshare in app/layout.jsx (see <head>). */
+  --ff-heading:
+    var(--font-inter), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --ff-sans: "Satoshi", var(--font-inter), ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --ff-mono: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  /* ---------- Type scale (Figma desktop values -> fluid down to mobile) ----------
+     size | line-height | weight | letter-spacing   (Figma px values in comments) */
+
+  /* h1: Inter 84px / 98px / 500 / -6px */
+  --fs-h1: clamp(2.75rem, 1.7rem + 4.4vw, 5.25rem); /* 44px -> 84px */
+  --lh-h1: 1.1667; /* 98 / 84 */
+  --ls-h1: -0.0714em; /* -6px at 84px */
+  --fw-h1: 500;
+
+  /* h2: Inter 54px / 81px / 600 / -1.62px  (Figma: white + centered on dark sections) */
+  --fs-h2: clamp(2rem, 1.25rem + 2.6vw, 3.375rem); /* 32px -> 54px */
+  --lh-h2: 1.5; /* 81 / 54 */
+  --ls-h2: -0.03em; /* -1.62px at 54px */
+  --fw-h2: 600;
+
+  /* h3: Inter 48px / 67px / 500 / -1.5px */
+  --fs-h3: clamp(1.75rem, 1.1rem + 2.3vw, 3rem); /* 28px -> 48px */
+  --lh-h3: 1.3958; /* 67 / 48 */
+  --ls-h3: -0.03125em; /* -1.5px at 48px */
+  --fw-h3: 500;
+
+  /* h4: Inter 36px  (not in Figma - midway between h3 and h5) */
+  --fs-h4: clamp(1.5rem, 1.1rem + 1.4vw, 2.25rem); /* 24px -> 36px */
+  --lh-h4: 1.35;
+  --ls-h4: -0.02em;
+  --fw-h4: 500;
+
+  /* h5: Inter 28px -> 20px. Was a fixed 28px, which on a phone matched h3 and
+     flattened the hierarchy (a card title read as loud as a section heading). */
+  --fs-h5: clamp(1.25rem, 0.9rem + 1.5vw, 1.75rem); /* 20px -> 28px */
+  --lh-h5: 1.35;
+  --ls-h5: -0.01em;
+  --fw-h5: 500;
+
+  /* h6: Inter 22px -> 18px (was fixed, same reason as h5) */
+  --fs-h6: clamp(1.125rem, 0.95rem + 0.75vw, 1.375rem); /* 18px -> 22px */
+  --lh-h6: 1.4;
+  --ls-h6: 0;
+  --fw-h6: 500;
+
+  /* p / body: Satoshi 16px / 27.9px / 400  (color: #111 at 85%)
+     Body and everything below it stay fixed: 16px is the readability floor for
+     running text, and 12-14px labels are already as small as they should go. */
+  --fs-body: 1rem;
+  --lh-body: 1.744; /* 27.9 / 16 */
+  --fw-body: 400;
+
+  /* label / span: Satoshi 14px / 19.11px / 500 / uppercase  (nav links, kickers) */
+  --fs-label: 0.875rem;
+  --lh-label: 1.365; /* 19.11 / 14 */
+  --fw-label: 500;
+
+  /* lead: intro paragraph under a headline (not in Figma) */
+  --fs-lead: clamp(1.125rem, 1rem + 0.4vw, 1.25rem); /* 18px -> 20px */
+  --lh-lead: 1.6;
+
+  /* small / caption */
+  --fs-small: 0.875rem; /* 14px */
+  --lh-small: 1.5;
+  --fs-caption: 0.75rem; /* 12px */
+  --lh-caption: 1.4;
+
+  /* ---------- Layout (Figma frame: 1520px wide, 80px side gap = 5.26vw) ----------
+     The page scales with the viewport up to 1920px, so proportions match the design
+     on any screen: side gap is 80px at 1520, 76px at 1440, 101px at 1920, 20px on phones. */
+  --layout-content: 120rem; /* 1920px  cap; the page scales with the viewport */
+  --layout-wide: 100%; /* full-bleed grids                        */
+  --layout-narrow: 64rem; /* 1024px  forms, article shells          */
+  --layout-reading: 42rem; /* 672px   long-form reading width        */
+  --gutter: clamp(1.25rem, 5.26vw, 6.3125rem);
+  --section-space: clamp(3.5rem, 8vw, 7rem);
+
+  /* ---------- Header (Figma: logo 210x41, 21px top/bottom -> 83px tall) ---------- */
+  --header-py: clamp(0.75rem, 1.4vw, 1.3125rem); /* 12px -> 21px */
+  /* A quarter taller than the Figma 41px: the real logo is a lockup whose bottom
+     quarter is the "An initiative by ..." line, so the wordmark itself lands at
+     roughly the size the design drew it. */
+  --logo-h: clamp(2.1875rem, 3.375vw, 3.203125rem); /* 35px -> 51px, logo width scales with it */
+  --header-height: calc(var(--logo-h) + 2 * var(--header-py)); /* 59px -> 93px */
+
+  /* ---------- Decorative ---------- */
+  /* Gradient text, e.g. "Grow" in the hero headline (violet -> magenta -> pink, approximated) */
+  --gradient-brand: linear-gradient(90deg, #7c3aed 0%, #c026d3 50%, #ff2d78 100%);
+  /* Faint background grid behind the hero */
+  --grid-line: rgb(17 17 17 / 0.06);
+  --grid-size: 7.25rem; /* 116px cells */
+
+  /* ---------- Shape ---------- */
+  --shape-card: 0.75rem; /* photo tiles (hero gallery) */
+  --shape-card-lg: 2rem; /* large feature cards, e.g. the message portrait card */
+  --shape-button: 9999px; /* pill buttons (Figma) */
+  --shape-input: 0.375rem;
+
+  /* ---------- Elevation ---------- */
+  --elevation-card: 0 1px 2px rgb(0 0 0 / 0.04), 0 4px 12px rgb(0 0 0 / 0.06);
+  --elevation-elevated: 0 12px 32px -12px rgb(0 0 0 / 0.25);
+
+  /* ---------- Motion ---------- */
+  --easing-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --easing-in-out-quart: cubic-bezier(0.76, 0, 0.24, 1);
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+  --duration-slow: 500ms;
+
+  /* ---------- Z-index ---------- */
+  --z-header: 50;
+  --z-dropdown: 60;
+  --z-modal: 100;
+  --z-toast: 200;
+}
+
+/* ---------- Semantic: DARK ---------- */
+.dark {
+  --background: var(--ink-950);
+  --foreground: var(--ink-50);
+  --muted: var(--ink-900);
+  --muted-foreground: var(--ink-400);
+  --card: var(--ink-900);
+  --card-foreground: var(--ink-50);
+  --popover: var(--ink-900);
+  --popover-foreground: var(--ink-50);
+  --border: var(--ink-800);
+  --input: var(--ink-700);
+  --ring: var(--brand-400);
+  --primary: var(--brand-400);
+  --primary-foreground: var(--ink-0);
+  --secondary: var(--ink-800);
+  --secondary-foreground: var(--ink-50);
+  --accent: var(--brand-400);
+  --accent-foreground: var(--ink-0);
+
+  --elevation-card: 0 1px 2px rgb(0 0 0 / 0.4), 0 4px 12px rgb(0 0 0 / 0.5);
+  --elevation-elevated: 0 12px 32px -12px rgb(0 0 0 / 0.7);
+}
+
+/* ============================================================================
+   TAILWIND THEME  ->  utilities
+   ============================================================================ */
+@theme inline {
+  /* Colors -> bg-*, text-*, border-*, ring-*, fill-* ... */
+  --color-brand-50: var(--brand-50);
+  --color-brand-100: var(--brand-100);
+  --color-brand-200: var(--brand-200);
+  --color-brand-300: var(--brand-300);
+  --color-brand-400: var(--brand-400);
+  --color-brand-500: var(--brand-500);
+  --color-brand-600: var(--brand-600);
+  --color-brand-700: var(--brand-700);
+  --color-brand-800: var(--brand-800);
+  --color-brand-900: var(--brand-900);
+  --color-brand-950: var(--brand-950);
+
+  --color-ink-0: var(--ink-0);
+  --color-ink-50: var(--ink-50);
+  --color-ink-100: var(--ink-100);
+  --color-ink-200: var(--ink-200);
+  --color-ink-300: var(--ink-300);
+  --color-ink-400: var(--ink-400);
+  --color-ink-500: var(--ink-500);
+  --color-ink-600: var(--ink-600);
+  --color-ink-700: var(--ink-700);
+  --color-ink-800: var(--ink-800);
+  --color-ink-900: var(--ink-900);
+  --color-ink-950: var(--ink-950);
+  --color-ink-1000: var(--ink-1000);
+
+  --color-highlight-pink: var(--highlight-pink);
+  --color-highlight-yellow: var(--highlight-yellow);
+  --color-indigo: var(--indigo);
+  --color-violet-500: var(--violet-500);
+
+  --color-gold-100: var(--gold-100);
+  --color-gold-300: var(--gold-300);
+  --color-gold-500: var(--gold-500);
+  --color-gold-700: var(--gold-700);
+
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+
+  /* Fonts -> font-heading (Inter) / font-sans (Satoshi) / font-mono */
+  --font-heading: var(--ff-heading);
+  --font-sans: var(--ff-sans);
+  --font-mono: var(--ff-mono);
+
+  /* Type scale -> text-h1 ... text-h6, text-body, text-label, text-lead,
+                   text-small, text-caption
+     Each utility sets size + line-height + letter-spacing + weight together. */
+  --text-h1: var(--fs-h1);
+  --text-h1--line-height: var(--lh-h1);
+  --text-h1--letter-spacing: var(--ls-h1);
+  --text-h1--font-weight: var(--fw-h1);
+
+  --text-h2: var(--fs-h2);
+  --text-h2--line-height: var(--lh-h2);
+  --text-h2--letter-spacing: var(--ls-h2);
+  --text-h2--font-weight: var(--fw-h2);
+
+  --text-h3: var(--fs-h3);
+  --text-h3--line-height: var(--lh-h3);
+  --text-h3--letter-spacing: var(--ls-h3);
+  --text-h3--font-weight: var(--fw-h3);
+
+  --text-h4: var(--fs-h4);
+  --text-h4--line-height: var(--lh-h4);
+  --text-h4--letter-spacing: var(--ls-h4);
+  --text-h4--font-weight: var(--fw-h4);
+
+  --text-h5: var(--fs-h5);
+  --text-h5--line-height: var(--lh-h5);
+  --text-h5--letter-spacing: var(--ls-h5);
+  --text-h5--font-weight: var(--fw-h5);
+
+  --text-h6: var(--fs-h6);
+  --text-h6--line-height: var(--lh-h6);
+  --text-h6--letter-spacing: var(--ls-h6);
+  --text-h6--font-weight: var(--fw-h6);
+
+  --text-body: var(--fs-body);
+  --text-body--line-height: var(--lh-body);
+  --text-body--font-weight: var(--fw-body);
+
+  --text-label: var(--fs-label);
+  --text-label--line-height: var(--lh-label);
+  --text-label--font-weight: var(--fw-label);
+
+  --text-lead: var(--fs-lead);
+  --text-lead--line-height: var(--lh-lead);
+
+  --text-small: var(--fs-small);
+  --text-small--line-height: var(--lh-small);
+
+  --text-caption: var(--fs-caption);
+  --text-caption--line-height: var(--lh-caption);
+
+  /* Widths -> max-w-content, max-w-wide, max-w-narrow, max-w-reading */
+  --container-content: var(--layout-content);
+  --container-wide: var(--layout-wide);
+  --container-narrow: var(--layout-narrow);
+  --container-reading: var(--layout-reading);
+
+  /* Spacing -> h-header, pt-header, py-header-y, h-logo, py-section, px-gutter ... */
+  --spacing-header: var(--header-height);
+  --spacing-header-y: var(--header-py);
+  --spacing-logo: var(--logo-h);
+  --spacing-section: var(--section-space);
+  --spacing-gutter: var(--gutter);
+
+  /* Radius -> rounded-card, rounded-card-lg, rounded-button, rounded-input */
+  --radius-card: var(--shape-card);
+  --radius-card-lg: var(--shape-card-lg);
+  --radius-button: var(--shape-button);
+  --radius-input: var(--shape-input);
+
+  /* Shadows -> shadow-card, shadow-elevated */
+  --shadow-card: var(--elevation-card);
+  --shadow-elevated: var(--elevation-elevated);
+
+  /* Easing -> ease-out-expo, ease-in-out-quart */
+  --ease-out-expo: var(--easing-out-expo);
+  --ease-in-out-quart: var(--easing-in-out-quart);
+
+  /* Animations -> animate-fade-up, animate-fade-in, animate-marquee */
+  --animate-fade-up: fade-up var(--duration-slow) var(--easing-out-expo) both;
+  --animate-fade-in: fade-in var(--duration-normal) ease-out both;
+  /* logo strip on phones; the list must be duplicated so -50% lands seamlessly */
+  --animate-marquee: marquee 20s linear infinite;
+
+  @keyframes marquee {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+}

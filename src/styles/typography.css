@@ -1,0 +1,131 @@
+/* ============================================================================
+   TYPOGRAPHY DEFAULTS  (values come from tokens.css)
+   Raw HTML looks right without classes. Utilities (text-h1, font-heading ...)
+   still override anywhere.
+
+   Figma spec:
+     h1  Inter   84 / 98    500  -6px
+     h2  Inter   54 / 81    600  -1.62px   (white + centered on dark sections)
+     h3  Inter   48 / 67    500  -1.5px
+     h4  Inter   36                        (assumed)
+     h5  Inter   28
+     h6  Inter   22
+     p   Satoshi 16 / 27.9  400  color #111 @ 85%
+     span/label  Satoshi 14 / 19.11  500  uppercase
+   ============================================================================ */
+@layer base {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--ff-heading);
+    text-wrap: balance;
+  }
+
+  h1 {
+    font-size: var(--fs-h1);
+    line-height: var(--lh-h1);
+    letter-spacing: var(--ls-h1);
+    font-weight: var(--fw-h1);
+  }
+  h2 {
+    font-size: var(--fs-h2);
+    line-height: var(--lh-h2);
+    letter-spacing: var(--ls-h2);
+    font-weight: var(--fw-h2);
+  }
+  h3 {
+    font-size: var(--fs-h3);
+    line-height: var(--lh-h3);
+    letter-spacing: var(--ls-h3);
+    font-weight: var(--fw-h3);
+  }
+  h4 {
+    font-size: var(--fs-h4);
+    line-height: var(--lh-h4);
+    letter-spacing: var(--ls-h4);
+    font-weight: var(--fw-h4);
+  }
+  h5 {
+    font-size: var(--fs-h5);
+    line-height: var(--lh-h5);
+    letter-spacing: var(--ls-h5);
+    font-weight: var(--fw-h5);
+  }
+  h6 {
+    font-size: var(--fs-h6);
+    line-height: var(--lh-h6);
+    letter-spacing: var(--ls-h6);
+    font-weight: var(--fw-h6);
+  }
+
+  /* Body copy: inherits the surrounding text color at 85% opacity, so it is
+     #111 @ 85% on light sections and white @ 85% inside dark sections. */
+  p {
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    font-weight: var(--fw-body);
+    color: color-mix(in srgb, currentColor 85%, transparent);
+    text-wrap: pretty;
+  }
+
+  a {
+    text-underline-offset: 0.2em;
+  }
+  small {
+    font-size: var(--fs-small);
+    line-height: var(--lh-small);
+  }
+
+  code,
+  kbd,
+  pre,
+  samp {
+    font-family: var(--ff-mono);
+  }
+
+  /* Quote (Figma "message" section): lead-size body text with a thin gold rule */
+  blockquote {
+    font-size: var(--fs-lead);
+    line-height: var(--lh-lead);
+    border-left: 2px solid var(--gold-500);
+    padding-left: 1rem;
+  }
+  blockquote p {
+    font-size: inherit;
+    line-height: inherit;
+  }
+}
+
+/* ---------- Text helpers (use as classes) ---------- */
+
+/* Uppercase label: nav links, kickers above headings, tags ("PROGRAMS") */
+@utility eyebrow {
+  display: inline-block;
+  font-family: var(--ff-sans);
+  font-size: var(--fs-label);
+  font-weight: var(--fw-label);
+  line-height: var(--lh-label);
+  text-transform: uppercase;
+  color: inherit; /* full #111, not the 85% body-copy color */
+}
+
+/* Large intro paragraph under a headline */
+@utility lead {
+  font-size: var(--fs-lead);
+  line-height: var(--lh-lead);
+  color: var(--muted-foreground);
+}
+
+/* Gradient text, e.g. <span class="text-gradient">Grow</span> inside the hero h1 */
+@utility text-gradient {
+  background-image: var(--gradient-brand);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  padding-right: 0.05em; /* keep the last glyph from being clipped */
+  margin-right: -0.05em;
+}
