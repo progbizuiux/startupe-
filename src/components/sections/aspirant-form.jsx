@@ -93,7 +93,7 @@ export function AspirantForm() {
         <CircleCheckBig aria-hidden="true" className="size-9 text-primary" />
         <h2 className="mt-4 text-h5">Registration received</h2>
         <p className="mt-3 text-muted-foreground">
-          Thanks for registering. The Startup E team will be in touch on WhatsApp with your nearest
+          Thanks for registering. The Startup E+ team will be in touch on WhatsApp with your nearest
           Campus E-Club and the next Zonal Idea Hackathon date.
         </p>
       </div>

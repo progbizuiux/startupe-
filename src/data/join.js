@@ -2,9 +2,9 @@
  * "Joining Startup E" section: intro on the left, numbered steps on the right.
  */
 export const join = {
-  heading: "Joining Startup E",
+  heading: "Joining Startup E+",
   description:
-    "Choose the pathway that fits your journey, share your details, and connect with the right opportunities, resources and people across the Startup E ecosystem.",
+    "Choose the pathway that fits your journey, share your details, and connect with the right opportunities, resources and people across the Startup E+ ecosystem.",
   cta: { label: "Register Now", href: "/register" },
 
   steps: [

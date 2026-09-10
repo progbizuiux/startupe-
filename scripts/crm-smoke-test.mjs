@@ -20,7 +20,7 @@ const NOTE = "TEST LEAD from scripts/crm-smoke-test.mjs - please ignore or delet
 const submissions = {
   aspirant: {
     portal: "aspirant",
-    fullName: "Startup E Website Integration Test",
+    fullName: "Startup E+ Website Integration Test",
     age: 22,
     gender: "Prefer not to say",
     district: "Kozhikode",
@@ -38,7 +38,7 @@ const submissions = {
     portal: "beginner",
     founders: [
       {
-        name: "Startup E Website Integration Test",
+        name: "Startup E+ Website Integration Test",
         email: "integration-test@startupe.invalid",
         phone: "9000000001",
         background: NOTE,

@@ -4,7 +4,7 @@
  * (highlight = "pink" | "yellow", see src/components/sections/about.jsx).
  */
 export const about = {
-  eyebrow: "What Startup E is",
+  eyebrow: "What Startup E+ is",
 
   headline: [
     "A youth-focused entrepreneurial movement that ",
@@ -20,5 +20,5 @@ export const about = {
     { title: "Empower", caption: "For Mentors & Experts" },
   ],
 
-  body: "Every Year Kerala Produces Thousands Of Graduates With Ideas, And Thousands Of Small Business Owners Who Have Run Out Of Road. Very Few Of Them Have A Clear Path Forward. Startup E Is That Path — A Single Pipeline From Raw Idea To Registered, Funded Company, Built With IIM Kozhikode, NIT Calicut, IIT Madras And Kerala Startup Mission.",
+  body: "Every Year Kerala Produces Thousands Of Graduates With Ideas, And Thousands Of Small Business Owners Who Have Run Out Of Road. Very Few Of Them Have A Clear Path Forward. Startup E+ Is That Path — A Single Pipeline From Raw Idea To Registered, Funded Company, Built With IIM Kozhikode, NIT Calicut, IIT Madras And Kerala Startup Mission.",
 };

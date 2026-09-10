@@ -106,7 +106,7 @@
 }
 
 /* 1px gradient stroke that fades into the background — the pillar cards in the
-   "what Startup E is" band (Figma). Set --ring-angle per card to move the bright
+   "what Startup E+ is" band (Figma). Set --ring-angle per card to move the bright
    end around the box; --ring-strength is how far round the perimeter it stays at
    full strength before falling away. */
 @utility gradient-ring {

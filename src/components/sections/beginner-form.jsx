@@ -84,7 +84,7 @@ export function BeginnerForm() {
         <CircleCheckBig aria-hidden="true" className="size-9 text-primary" />
         <h2 className="mt-4 text-h5">Registration received</h2>
         <p className="mt-3 text-muted-foreground">
-          Thanks for registering. The Startup E team will follow up on mentoring, compliance support
+          Thanks for registering. The Startup E+ team will follow up on mentoring, compliance support
           and the KSUM seed capital routes open to you.
         </p>
       </div>

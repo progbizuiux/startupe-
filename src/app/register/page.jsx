@@ -5,7 +5,7 @@ import { Container } from "@/components/ui/container";
 
 export const metadata = {
   title: "Register",
-  description: "Choose the Startup E pathway that matches where you are.",
+  description: "Choose the Startup E+ pathway that matches where you are.",
 };
 
 /** Portal chooser. Each portal has its own route, form and validation schema. */

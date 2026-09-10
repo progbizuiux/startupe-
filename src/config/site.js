@@ -26,6 +26,7 @@ export const siteConfig = {
   /* Footer social icons (keys must match src/components/ui/social-icons.jsx) */
   social: {
     facebook: "https://facebook.com/yourpage",
+    instagram: "https://instagram.com/yourhandle",
     x: "https://x.com/yourhandle",
     linkedin: "https://linkedin.com/company/yourcompany",
   },

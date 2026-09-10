@@ -8,7 +8,7 @@ import { siteConfig } from "@/config/site";
 export const footer = {
   /* Sits above the social icons. Optional - set it to "" and the icons move up. */
   description:
-    "Startup E connects Kerala's aspiring and early-stage entrepreneurs with the mentors, resources and opportunities they need to grow. An initiative by Shafi Parambil MP.",
+    "Startup E+ connects Kerala's aspiring and early-stage entrepreneurs with the mentors, resources and opportunities they need to grow. An initiative by Shafi Parambil MP.",
 
   columns: [
     {

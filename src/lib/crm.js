@@ -81,8 +81,8 @@ const compact = (object) =>
    changing the assignment rule on the CRM side too. Plain ASCII: they are
    matched against rules typed into the CRM, where an em dash invites a mismatch. */
 const FORM_NAME = {
-  aspirant: "Startup E - The Aspirant",
-  beginner: "Startup E - The Beginner",
+  aspirant: "Startup E+ - The Aspirant",
+  beginner: "Startup E+ - The Beginner",
 };
 
 /** Portal 1: the applicant is the contact. */

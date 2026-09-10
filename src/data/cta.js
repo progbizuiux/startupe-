@@ -23,7 +23,7 @@ const unsplash = (id, w = 400) =>
 export const cta = {
   heading: "Build Your Future with the Right Support.",
   description:
-    "Connect with ideas, businesses, mentors and opportunities through Startup E — and take the next step in your entrepreneurial journey.",
+    "Connect with ideas, businesses, mentors and opportunities through Startup E+ and take the next step in your entrepreneurial journey.",
   buttons: [
     { label: "I Have an Idea", href: "/register/beginner" },
     { label: "I Run a Business", href: "/register/aspirant" },

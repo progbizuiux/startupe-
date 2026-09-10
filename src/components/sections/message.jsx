@@ -7,7 +7,8 @@ import { Container } from "@/components/ui/container";
  * "A message from ..." (Figma): cut-out portrait on a blue rounded card on the left
  * (41% of the content width), heading, quote with a gold left rule, and name / role
  * on the right (53%, after a 6% gap), vertically centred with the card.
- * Content lives in src/data/message.js.
+ * The heading is an array of parts so a name can be set bold; content lives in
+ * src/data/message.js.
  */
 export function Message() {
   const { image } = message;
@@ -23,7 +24,17 @@ export function Message() {
               phones like every other section, and the colours are tokens so the
               block survives dark mode. */}
           <div className="lg:max-w-[46rem]">
-            <h2 className="text-h3">{message.heading}</h2>
+            <h2 className="text-h3">
+              {message.heading.map((part, i) =>
+                typeof part === "string" ? (
+                  part
+                ) : (
+                  <strong key={i} className={part.bold ? "font-bold" : undefined}>
+                    {part.text}
+                  </strong>
+                ),
+              )}
+            </h2>
 
             <figure className="mt-6">
               <blockquote className="border-l-[3px] border-foreground py-1 pl-6">
