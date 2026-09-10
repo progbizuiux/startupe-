@@ -51,7 +51,14 @@ export default function RootLayout({ children }) {
           href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap"
         />
       </head>
-      <body className="flex min-h-dvh flex-col bg-background font-sans text-foreground">
+      {/* suppressHydrationWarning: browser extensions (Grammarly and friends) add
+          attributes like data-gr-ext-installed to <body> between the server HTML
+          arriving and React hydrating, which React reports as a mismatch. It only
+          covers this element's own attributes, not anything rendered inside. */}
+      <body
+        suppressHydrationWarning
+        className="flex min-h-dvh flex-col bg-background font-sans text-foreground"
+      >
         <Providers>
           <Header />
           <main className="flex-1">{children}</main>

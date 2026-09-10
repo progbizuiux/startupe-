@@ -11,11 +11,11 @@ const unsplash = (id, w = 1000) =>
 
 export const hero = {
   /* Each entry is one line of the headline; the highlight is appended to the last line */
-  titleLines: ["A Space to Learn,", "Build and"],
-  titleHighlight: "Grow",
+  titleLines: ["Together, We Build", "What's "],
+  titleHighlight: "Next",
 
   description:
-    "A government-backed movement empowering Kerala's next generation of entrepreneurs, innovators, and change-makers.",
+    "A connected ecosystem helping Kerala’s entrepreneurs and businesses turn ideas into opportunities, growth, and impact",
 
   cta: { label: "See how it works", href: "#message" }, // point at the "How it works" section once it exists
 

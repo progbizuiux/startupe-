@@ -15,9 +15,9 @@ export const footer = {
       title: "Quick Links",
       nav: true,
       links: [
-        { label: "Register", href: "/register" },
+        { label: "Register", href: "/#cta" },
         { label: "Process", href: "/#message" }, // point at the "How it works" section once it exists
-        { label: "Faq", href: "/#faq" },
+        // { label: "Faq", href: "/#faq" },
       ],
     },
     {
@@ -35,7 +35,7 @@ export const footer = {
   /* One entry per line of the address, in the order it should be read */
   address: {
     title: "Address",
-    lines: ["MP Office", "Vatakara"],
+    lines: ["MP Office", "Vadakara"],
   },
 
   copyright: "All Rights Reserved",

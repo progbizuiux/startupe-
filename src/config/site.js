@@ -23,12 +23,14 @@ export const siteConfig = {
   /* Header: right-side button (desktop header and the mobile menu) */
   cta: { label: "Join the Movement", href: "/register/beginner" },
 
-  /* Footer social icons (keys must match src/components/ui/social-icons.jsx) */
+  /* Footer social icons (keys must match src/components/ui/social-icons.jsx).
+     The footer renders one icon per entry, so an account without a real URL is
+     simply left out rather than shipped as a dead link. X and LinkedIn glyphs are
+     still defined in social-icons.jsx - add the key back here with a real profile
+     URL and the icon returns. */
   social: {
-    facebook: "https://facebook.com/yourpage",
-    instagram: "https://instagram.com/yourhandle",
-    x: "https://x.com/yourhandle",
-    linkedin: "https://linkedin.com/company/yourcompany",
+    facebook: "https://www.facebook.com/profile.php?id=61594291859742",
+    instagram: "https://www.instagram.com/startup_eplus",
   },
 
   /* Footer "Contact" column */

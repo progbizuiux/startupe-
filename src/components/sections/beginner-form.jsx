@@ -381,17 +381,9 @@ export function BeginnerForm() {
         )}
       </div>
 
-      <div className="flex flex-wrap items-center gap-4">
-        <Button type="submit" size="md" disabled={isSubmitting}>
-          {isSubmitting ? "Sending…" : "Submit registration"}
-        </Button>
-        <span className="text-caption text-muted-foreground">
-          <span aria-hidden="true" className="text-destructive">
-            *
-          </span>{" "}
-          required
-        </span>
-      </div>
+      <Button type="submit" size="md" disabled={isSubmitting}>
+        {isSubmitting ? "Sending…" : "Submit registration"}
+      </Button>
     </form>
   );
 }

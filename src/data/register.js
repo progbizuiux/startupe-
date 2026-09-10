@@ -117,19 +117,3 @@ export const beginner = {
   ipTerms:
     "I acknowledge the standard Non-Disclosure and Intellectual Property protection terms, and confirm I am authorised to submit these details on behalf of the entity.",
 };
-
-/** Drives the chooser at /register. */
-export const portals = [
-  {
-    slug: "aspirant",
-    eyebrow: aspirant.eyebrow,
-    heading: aspirant.heading,
-    blurb: "I have an idea or want to start, and have not registered an entity yet.",
-  },
-  {
-    slug: "beginner",
-    eyebrow: beginner.eyebrow,
-    heading: beginner.heading,
-    blurb: "I have a registered startup or micro-enterprise, 0-2 years old.",
-  },
-];

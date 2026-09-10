@@ -9,9 +9,9 @@
 export const partners = {
   eyebrow: "Built with Kerala's best",
   logos: [
-    { name: "Partner 1", src: "/patners-logo/partner1.png" },
-    { name: "Partner 2", src: "/patners-logo/partner2.png" },
-    { name: "Partner 3", src: "/patners-logo/partner3.webp" },
-    { name: "Partner 4", src: "/patners-logo/partner4.png" },
+    { name: "IIM Kozhikode", src: "/patners-logo/iim-kozhikode.png" },
+    { name: "NIT Calicut", src: "/patners-logo/nit-calicut.png" },
+    { name: "Cyberpark", src: "/patners-logo/cyberpark.png" },
+    { name: "Progbiz", src: "/patners-logo/progbiz.webp" },
   ],
 };

@@ -5,7 +5,7 @@ export const join = {
   heading: "Joining Startup E+",
   description:
     "Choose the pathway that fits your journey, share your details, and connect with the right opportunities, resources and people across the Startup E+ ecosystem.",
-  cta: { label: "Register Now", href: "/register" },
+  cta: { label: "Register Now", href: "/#cta" },
 
   steps: [
     {
