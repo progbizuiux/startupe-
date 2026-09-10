@@ -5,12 +5,16 @@
  * Nav items: { label, href, external? }  (labels are shown uppercase by CSS)
  */
 export const siteConfig = {
-  name: "Start-Up",
-  tagline: "Your one-line tagline goes here.",
-  description: "Short description of the company / product for search engines and social previews.",
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
+  name: "Startup E+",
+  /* Pair the name in the browser tab and search results; keep the two together
+     under ~60 characters so Google does not truncate the title. */
+  tagline: "Kerala's Startup & MSME Movement",
+  /* Kept under ~155 characters: past that Google truncates it in results. */
+  description:
+    "A pan-Kerala movement from the Office of MP Shafi Parambil, connecting students, founders and MSMEs with mentors, funding and institutional support.",
+  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://startupeplus.com",
   ogImage: "/og.png",
-  locale: "en_US",
+  locale: "en_IN",
 
   /* Header: centered links. All three point at sections of the home page, so
      they work from any route (a bare "#about" would only scroll on "/"). */
