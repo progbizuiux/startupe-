@@ -1,9 +1,9 @@
 /**
  * Home page hero content. Edit copy + images here.
- * Gallery photos are the Figma exports in public/images/home-page/.
+ * Gallery photos are from the Startup E+ launch, in public/images/home-page/.
  * The mentor avatars are still Unsplash placeholders - swap `src` for real files.
  */
-/* Hero gallery photos exported from Figma; see public/images/home-page/ */
+/* Hero gallery photos from the launch event; see public/images/home-page/ */
 const home = (name) => `/images/home-page/${name}.webp`;
 
 const unsplash = (id, w = 1000) =>
@@ -40,32 +40,58 @@ export const hero = {
       width: 327,
       images: [
         {
-          src: home("workshop-whiteboard"),
-          alt: "Workshop session around a whiteboard",
+          src: home("crowdframe"),
+          alt: "Attendees seated at the Startup E+ launch",
           height: 375,
         },
-        { src: home("designer-desk"), alt: "Designer working at a desk", height: 240 },
+        {
+          src: home("team-boardroom"),
+          alt: "The Startup E+ team meeting around a boardroom table",
+          height: 240,
+        },
       ],
     },
     {
       width: 308,
-      images: [{ src: home("tablet-portfolio"), alt: "Design work on a tablet", height: 436 }],
+      images: [
+        {
+          src: home("mp-podium"),
+          alt: "Shafi Parambil MP speaking at the launch podium",
+          height: 436,
+        },
+      ],
     },
     {
       width: 538,
       /* the lead photo on phones, where the five-column strip collapses to one */
       mobile: true,
-      images: [{ src: home("open-office"), alt: "Team working in an open office", height: 583 }],
+      images: [
+        {
+          src: home("indrodection"),
+          alt: "Shafi Parambil MP arriving at the Startup E+ launch",
+          height: 583,
+        },
+      ],
     },
     {
       width: 309,
-      images: [{ src: home("mentor-session"), alt: "Mentor talking with a group", height: 430 }],
+      images: [
+        {
+          src: home("crowd-celebration"),
+          alt: "Founders and students celebrating at the launch",
+          height: 430,
+        },
+      ],
     },
     {
       width: 307,
       images: [
-        { src: home("speaker-presenting"), alt: "Speaker presenting to an audience", height: 375 },
-        { src: home("classroom-question"), alt: "Student asking a question in class", height: 240 },
+        {
+          src: home("confluence-speaker"),
+          alt: "A speaker presenting at the Confluence session",
+          height: 375,
+        },
+        { src: home("audience-engaged"), alt: "Students listening in the audience", height: 240 },
       ],
     },
   ],

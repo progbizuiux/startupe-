@@ -51,6 +51,7 @@ export function HeroGallery({ columns, className }) {
                 alt={img.alt}
                 fill
                 sizes="(max-width: 768px) 92vw, 30vw"
+                quality={90}
                 className="object-cover"
               />
             </div>
