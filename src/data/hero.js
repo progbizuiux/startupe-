@@ -61,6 +61,7 @@ export const hero = {
         },
       ],
     },
+    
     {
       width: 538,
       /* the lead photo on phones, where the five-column strip collapses to one */
