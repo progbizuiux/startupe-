@@ -6,6 +6,7 @@ export const metadata = {
   title: "Register — The Aspirant",
   description:
     "Register with Startup E+ if you have an idea or want to start a business but have not registered an entity yet.",
+  alternates: { canonical: "/register/aspirant" },
 };
 
 export default function AspirantPage() {

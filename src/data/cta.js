@@ -25,8 +25,8 @@ export const cta = {
   description:
     "Connect with ideas, businesses, mentors and opportunities through Startup E+ and take the next step in your entrepreneurial journey.",
   buttons: [
-    { label: "I Have an Idea", href: "/register/beginner" },
-    { label: "I Run a Business", href: "/register/aspirant" },
+    { label: "I Have an Idea", href: "/register/aspirant" },
+    { label: "I Run a Business", href: "/register/beginner" },
   ],
 
   background: { src: "/images/cta-bg.webp", color: "#3562f0" },

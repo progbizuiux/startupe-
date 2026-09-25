@@ -11,9 +11,15 @@ export default function NotFound() {
         <p className="mx-auto mt-4 max-w-reading lead">
           The page you are looking for does not exist or has moved.
         </p>
-        <Link href="/" className={buttonVariants({ className: "mt-8" })}>
-          Back to home
-        </Link>
+        {/* Somebody who mistyped a URL is exactly who should be offered a human */}
+        <div className="mt-8 flex flex-wrap justify-center gap-4">
+          <Link href="/" className={buttonVariants()}>
+            Back to home
+          </Link>
+          <Link href="/contact" className={buttonVariants({ variant: "outline" })}>
+            Contact us
+          </Link>
+        </div>
       </Container>
     </section>
   );

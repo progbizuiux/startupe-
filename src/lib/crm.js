@@ -56,11 +56,20 @@ function toE164(value) {
   return local.length === 10 ? `+91${local}` : value.trim();
 }
 
-/** "Label: value" lines, skipping anything blank. */
+/**
+ * "Label: value" lines, skipping anything blank.
+ *
+ * A value's own newlines are indented, which is not cosmetic: `description` is
+ * read by whoever works the CRM queue as a list of labelled fields, and a free
+ * text value containing "\nVerified by office: Yes" would otherwise render as
+ * one of those labels. Indenting keeps every continuation line visibly part of
+ * the value above it, so nothing a visitor types can impersonate a field the
+ * site wrote.
+ */
 const lines = (entries) =>
   entries
     .filter(([, value]) => value !== undefined && value !== null && value !== "")
-    .map(([label, value]) => `${label}: ${value}`)
+    .map(([label, value]) => `${label}: ${String(value).replace(/\r?\n/g, "\n    ")}`)
     .join("\n");
 
 /**
@@ -83,6 +92,8 @@ const compact = (object) =>
 const FORM_NAME = {
   aspirant: "Startup E+ - The Aspirant",
   beginner: "Startup E+ - The Beginner",
+  contact: "Startup E+ - Contact",
+  registerStart: "Startup E+ - Registration",
 };
 
 /** Portal 1: the applicant is the contact. */
@@ -176,7 +187,87 @@ function fromBeginner(data) {
   };
 }
 
-const MAPPERS = { aspirant: fromAspirant, beginner: fromBeginner };
+/**
+ * The /contact form. Not a registration - the visitor is asking something, so
+ * the lead is a contact plus their message.
+ *
+ * Deliberately sets no city / state / country. Both portals hardcode
+ * state: "Kerala" because you have to be in Kerala to register, but a contact
+ * page is reachable from anywhere, and writing a wrong value into a real CRM
+ * column is worse than leaving it empty for whoever works the queue to fill in.
+ *
+ * Every value in `additionalData` is repeated in `description`, which is a hard
+ * invariant rather than duplication: CRM_ADDITIONAL_DATA=off drops the custom
+ * field map entirely (see buildLead), and a message body that lived only there
+ * would vanish during exactly the outage that hatch exists for.
+ */
+function fromContact(data) {
+  return {
+    fullName: data.fullName,
+    email: data.email,
+    phoneNumber: toE164(data.phone),
+    whatsappNumber: toE164(data.phone),
+    description: lines([
+      ["Portal", "Contact"],
+      ["Topic", data.topic],
+      ["Preferred reply", data.preferredReply],
+      ["Phone", toE164(data.phone)],
+      ["Organisation", data.organisation],
+      ["Message", data.message],
+    ]),
+    additionalData: compact({
+      Portal: "Contact",
+      Topic: data.topic,
+      PreferredReply: data.preferredReply,
+      Organisation: data.organisation,
+      Message: data.message,
+    }),
+  };
+}
+
+/**
+ * The /register front door. Five fields plus the registration ID this site
+ * issued, which is the whole point of the lead: nothing is stored here, so the
+ * CRM record is the only place that ID can ever be looked up again. It is
+ * therefore the FIRST line of the description as well as a custom field -
+ * CRM_ADDITIONAL_DATA=off drops the custom-field map wholesale, and an ID that
+ * lived only there would vanish during exactly the outage that hatch exists
+ * for.
+ *
+ * state is hardcoded to Kerala here, unlike fromContact: the form only offers
+ * Kerala districts, so it cannot be wrong.
+ */
+function fromRegisterStart(data) {
+  return {
+    fullName: data.fullName,
+    email: data.email,
+    phoneNumber: toE164(data.whatsapp),
+    whatsappNumber: toE164(data.whatsapp),
+    city: data.district,
+    state: "Kerala",
+    country: "India",
+    description: lines([
+      ["Registration ID", data.registrationId],
+      ["Portal", "Registration"],
+      ["Pathway", data.pathway],
+      ["District", data.district],
+      ["Next step", data.next],
+    ]),
+    additionalData: compact({
+      RegistrationID: data.registrationId,
+      Portal: "Registration",
+      Pathway: data.pathway,
+      District: data.district,
+    }),
+  };
+}
+
+const MAPPERS = {
+  aspirant: fromAspirant,
+  beginner: fromBeginner,
+  contact: fromContact,
+  registerStart: fromRegisterStart,
+};
 
 /**
  * The request body for a validated submission, or null for an unknown portal.

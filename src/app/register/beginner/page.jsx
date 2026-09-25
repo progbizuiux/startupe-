@@ -6,6 +6,7 @@ export const metadata = {
   title: "Register — The Beginner",
   description:
     "Register your early-stage startup or new micro-enterprise with Startup E+ for mentoring, compliance support and seed capital guidance.",
+  alternates: { canonical: "/register/beginner" },
 };
 
 export default function BeginnerPage() {

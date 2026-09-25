@@ -3,8 +3,20 @@ import { cn } from "@/lib/utils";
 /** Shared look for text inputs, selects and textareas. */
 export const controlClasses =
   "w-full rounded-input border border-border bg-background px-4 py-3 text-body text-foreground " +
+  /* A floor equal to the natural height of a text input: 1.744 line-height at
+     16px, plus the 12px padding and 1px border on each side. Without it a
+     <select> renders 7px shorter than the <input> beside it — Chrome sizes a
+     select from its font metrics and ignores line-height — so the two controls
+     in a row do not line up. Set here rather than per-form so every control on
+     the site is the same height; a textarea is taller than the floor anyway. */
+  "min-h-[3.375rem] " +
   "placeholder:text-muted-foreground/70 " +
-  "focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30 focus-visible:outline-none " +
+  /* `ring-inset` matters for alignment: a default ring is drawn outside the
+     border box, so a focused control renders 4px taller and wider than the one
+     beside it and the row looks misaligned while you are typing in it. Drawn
+     inside, the footprint is identical focused or not; the border colour change
+     still makes focus obvious. */
+  "focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring/40 focus-visible:outline-none " +
   "aria-[invalid=true]:border-destructive aria-[invalid=true]:ring-destructive/25 " +
   "disabled:cursor-not-allowed disabled:opacity-60";
 

@@ -1,10 +1,11 @@
 /**
  * End-to-end check for the CRM hand-off.
  *
- *   node scripts/crm-smoke-test.mjs [aspirant|beginner] [baseUrl]
+ *   node scripts/crm-smoke-test.mjs [aspirant|beginner|contact] [baseUrl]
  *
- * Posts one clearly-labelled test registration to the site's own /api/register,
- * so it exercises the whole path: zod validation -> lead mapping (src/lib/crm.js)
+ * Posts one clearly-labelled test submission to the site's own API - /api/register
+ * for the two registration portals, /api/contact for the contact form - so it
+ * exercises the whole path: zod validation -> lead mapping (src/lib/crm.js)
  * -> Progbiz Third Party Leads API. The dev server has to be running, and it is
  * the server's .env.local that supplies CRM_LEADS_URL / CRM_API_KEY /
  * CRM_BRANCH_ID - this script never reads the key itself.
@@ -13,7 +14,10 @@
  * delete it afterwards. In development the response repeats what the CRM said
  * when it refuses, which is the fastest way to see why.
  */
-const [portal = "aspirant", baseUrl = "http://localhost:3000"] = process.argv.slice(2);
+const [form = "aspirant", baseUrl = "http://localhost:3000"] = process.argv.slice(2);
+
+/* the contact form is its own route, and its payload carries no `portal` key */
+const ENDPOINT = form === "contact" ? "/api/contact" : "/api/register";
 
 const NOTE = "TEST LEAD from scripts/crm-smoke-test.mjs - please ignore or delete.";
 
@@ -53,20 +57,29 @@ const submissions = {
     operationalHurdle: "Initial Working Capital",
     ipAcknowledged: true,
   },
+  contact: {
+    fullName: "Startup E+ Website Integration Test",
+    email: "integration-test@startupe.invalid",
+    phone: "9000000001",
+    topic: "Something else",
+    organisation: "Integration Test",
+    preferredReply: "Email",
+    message: NOTE,
+  },
 };
 
-const body = submissions[portal];
+const body = submissions[form];
 if (!body) {
-  console.error(`Unknown portal "${portal}". Use "aspirant" or "beginner".`);
+  console.error(`Unknown form "${form}". Use "aspirant", "beginner" or "contact".`);
   process.exit(1);
 }
 
-console.log(`POST ${baseUrl}/api/register  (portal: ${portal})`);
+console.log(`POST ${baseUrl}${ENDPOINT}  (${form})`);
 
 const started = Date.now();
 let response;
 try {
-  response = await fetch(`${baseUrl}/api/register`, {
+  response = await fetch(`${baseUrl}${ENDPOINT}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),

@@ -15,7 +15,9 @@ export const footer = {
       title: "Quick Links",
       nav: true,
       links: [
-        { label: "Register", href: "/#cta" },
+        { label: "About", href: "/about" },
+        { label: "Contact", href: "/contact" },
+        { label: "Register", href: "/register" },
         { label: "Process", href: "/#message" }, // point at the "How it works" section once it exists
         // { label: "Faq", href: "/#faq" },
       ],
@@ -32,10 +34,11 @@ export const footer = {
     },
   ],
 
-  /* One entry per line of the address, in the order it should be read */
+  /* One entry per line of the address, in the order it should be read. The lines
+     come from siteConfig so the footer and the /contact page cannot drift apart. */
   address: {
     title: "Address",
-    lines: ["MP Office", "Vadakara"],
+    lines: siteConfig.contact.address,
   },
 
   copyright: "All Rights Reserved",
