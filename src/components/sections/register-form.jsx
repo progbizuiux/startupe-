@@ -1,42 +1,77 @@
 import { KERALA_DISTRICTS } from "@/data/register";
-import { REGISTER_STAGES, registerPage } from "@/data/register-page";
+import { OCCUPATIONS, registerPage } from "@/data/register-page";
 import { Container } from "@/components/ui/container";
 import { RegisterFormFields } from "@/components/sections/register-form-fields";
 
 /**
- * The form, and — on success — the hand-off that replaces it.
+ * The whole of /register: the page's heading and the eight-field form, which
+ * replaces itself with the pass once it is submitted.
+ *
+ * One section on purpose. An earlier version explained the process across four
+ * sections and showed a specimen of the pass before asking for anything; this
+ * one puts the form on the first screen instead, and lets the success panel do
+ * the explaining at the moment it is useful.
  *
  * A server section wrapping a client island, as in faq.jsx / faq-list.jsx. The
  * island takes the district list and the two pathways as props rather than
  * importing from src/data itself, so the option lists stay server-side and
  * there is one source of truth for them (src/data/register.js for districts,
  * which the schema also builds its enum from).
- *
- * Content lives in src/data/register-page.js.
  */
 export function RegisterForm() {
   const { form } = registerPage;
+  const lastLine = registerPage.titleLines.length - 1;
 
   return (
-    <section id="form" className="section-y">
+    <section className="section-y">
       <Container>
-        <div className="mx-auto max-w-[48rem]">
-          <div data-reveal>
-            <span className="eyebrow text-muted-foreground">{form.eyebrow}</span>
-            <h2 className="mt-4 text-h3">{form.heading}</h2>
-            <p className="mt-5 max-w-[52ch] text-muted-foreground">{form.description}</p>
-          </div>
+        <div className="mx-auto max-w-[46rem]">
+          {/* The entrance is CSS, not a scroll reveal: this block is already
+              painted when React hydrates, so hiding it to animate it back in
+              would read as a flash. `motion-reduce:animate-none` drops it
+              outright rather than leaning on base.css, which only collapses the
+              duration — the delay would survive that and hold each piece hidden
+              for up to half a second. */}
+          <span
+            style={{ animationDelay: "0ms" }}
+            className="eyebrow animate-fade-up text-muted-foreground motion-reduce:animate-none"
+          >
+            {registerPage.eyebrow}
+          </span>
 
-          {/* No data-reveal on the form block: a tween in flight over a control
-              that can take focus is worse than no motion, and the success panel
-              changes the block's height anyway. */}
-          <div className="mt-[clamp(2rem,3vw,3rem)]">
+          <h1
+            style={{ animationDelay: "50ms" }}
+            className="mt-4 animate-fade-up text-[clamp(2rem,1.4rem+2.4vw,3.25rem)] leading-[1.14] motion-reduce:animate-none"
+          >
+            {registerPage.titleLines.map((line, i) => (
+              <span key={line} className="block">
+                {line}
+                {i === lastLine && (
+                  <>
+                    {" "}
+                    <span className="text-gradient">{registerPage.titleHighlight}</span>
+                  </>
+                )}
+              </span>
+            ))}
+          </h1>
+
+          <p
+            style={{ animationDelay: "120ms" }}
+            className="mt-5 max-w-[52ch] animate-fade-up text-lead text-muted-foreground motion-reduce:animate-none"
+          >
+            {registerPage.description}
+          </p>
+
+          {/* No entrance animation on the form itself: a tween in flight over a
+              control that can take focus is worse than no motion, and the
+              success panel changes the block's height anyway. */}
+          <div className="mt-[clamp(2rem,3.5vw,3rem)]">
             <RegisterFormFields
               districts={KERALA_DISTRICTS}
-              stages={REGISTER_STAGES}
+              occupations={OCCUPATIONS}
               labels={form.labels}
-              stageLabel={form.stageLabel}
-              stageHint={form.stageHint}
+              legends={form.legends}
               success={form.success}
             />
           </div>

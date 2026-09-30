@@ -10,11 +10,10 @@ import { siteConfig } from "@/config/site";
 import { registerStartSchema } from "@/lib/register-start-schema";
 import { cn } from "@/lib/utils";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { Field, controlClasses, describedBy } from "@/components/ui/field";
-import { RegisterPassCard } from "@/components/sections/register-pass-card";
+import { Field, Select, controlClasses, describedBy } from "@/components/ui/field";
 
 /**
- * The front-door form, and the hand-off that replaces it on success.
+ * The registration form, and the hand-off that replaces it on success.
  *
  * Validation lives in src/lib/register-start-schema.js and is shared with the
  * API route, so the browser and the server enforce the same rules; the client
@@ -26,7 +25,7 @@ import { RegisterPassCard } from "@/components/sections/register-pass-card";
  * asked. Inline, the only pass that exists is the one issued to the person who
  * just filled the form.
  */
-export function RegisterFormFields({ districts, stages, labels, stageLabel, stageHint, success }) {
+export function RegisterFormFields({ districts, occupations, labels, legends, success }) {
   const [result, setResult] = useState(null);
 
   /* The panel replaces the form, so the submit button unmounts and focus would
@@ -39,6 +38,13 @@ export function RegisterFormFields({ districts, stages, labels, stageLabel, stag
     }
   }, [result]);
 
+  /* The pass is held as an object URL, which pins the whole file in memory
+     until it is revoked — and this one is a 1.8MB document. Released when the
+     island unmounts; not when `result` changes, because the only change it ever
+     makes is null -> set, and revoking then would break the download link. */
+  const passUrl = result?.passUrl;
+  useEffect(() => () => passUrl && URL.revokeObjectURL(passUrl), [passUrl]);
+
   const {
     register,
     handleSubmit,
@@ -49,10 +55,13 @@ export function RegisterFormFields({ districts, stages, labels, stageLabel, stag
     mode: "onBlur",
     defaultValues: {
       fullName: "",
+      age: "",
+      occupation: "",
       email: "",
-      whatsapp: "",
+      phone: "",
+      altPhone: "",
+      address: "",
       district: "",
-      stage: "",
       website: "",
     },
   });
@@ -64,26 +73,42 @@ export function RegisterFormFields({ districts, stages, labels, stageLabel, stag
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(values),
       });
-      const payload = await res.json().catch(() => ({}));
+      /* A success answers with the pass itself (application/pdf) and carries the
+         registration details in headers; anything that went wrong answers with
+         JSON. Branch on the content type rather than on the status alone. */
+      const isPass = res.headers.get("content-type")?.startsWith("application/pdf");
 
-      /* The server re-validates, and it is the only side that can reject for
-         reasons the browser cannot see. Map its field errors back onto the
-         inputs rather than showing one generic failure. */
-      if (res.status === 422 && payload.errors) {
-        for (const [name, message] of Object.entries(payload.errors)) {
-          setError(name, { type: "server", message });
+      if (!isPass) {
+        const payload = await res.json().catch(() => ({}));
+
+        /* The server re-validates, and it is the only side that can reject for
+           reasons the browser cannot see. Map its field errors back onto the
+           inputs rather than showing one generic failure. */
+        if (res.status === 422 && payload.errors) {
+          for (const [name, message] of Object.entries(payload.errors)) {
+            setError(name, { type: "server", message });
+          }
+          toast.error("Please check the highlighted fields.");
+          return;
         }
-        toast.error("Please check the highlighted fields.");
-        return;
-      }
-      if (!res.ok || !payload.registrationId) {
         throw new Error(payload.error || `Request failed (${res.status})`);
       }
 
-      /* Name and district come from what was just typed, not from the response:
-         the server has no reason to echo personal details back, and these are
-         only needed to draw the card on screen. */
-      setResult({ ...payload, fullName: values.fullName, district: values.district });
+      /* Hold the file as an object URL so the download button hands over the
+         exact bytes the server rendered, with no second request and nothing
+         re-encoded. Revoked when the component unmounts. */
+      const blob = await res.blob();
+
+      setResult({
+        registrationId: res.headers.get("X-Registration-Id"),
+        pathway: res.headers.get("X-Registration-Pathway"),
+        next: res.headers.get("X-Registration-Next"),
+        passUrl: URL.createObjectURL(blob),
+        /* from what was just typed: the server has no reason to echo personal
+           details back, and these only draw the card on screen */
+        fullName: values.fullName,
+        district: values.district,
+      });
       toast.success("You're registered. Your pass is ready.");
     } catch (error) {
       toast.error(
@@ -95,26 +120,6 @@ export function RegisterFormFields({ districts, stages, labels, stageLabel, stag
   };
 
   if (result) {
-    const issued = new Intl.DateTimeFormat("en-GB", {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    }).format(new Date());
-
-    /* base64 -> Blob, built on demand so a large data: URL is never put in the
-       DOM and the file gets a proper name. */
-    const downloadPass = () => {
-      const bytes = Uint8Array.from(atob(result.pass), (c) => c.charCodeAt(0));
-      const url = URL.createObjectURL(new Blob([bytes], { type: "application/pdf" }));
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `startup-e-plus-pass-${result.registrationId}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
-    };
-
     return (
       <div
         ref={doneRef}
@@ -122,7 +127,7 @@ export function RegisterFormFields({ districts, stages, labels, stageLabel, stag
         role="status"
         className="rounded-card border border-border bg-background p-6 sm:p-8"
       >
-        <h3 className="text-h5">{success.heading}</h3>
+        <h2 className="text-h5">{success.heading}</h2>
         <p className="mt-3 max-w-[52ch] text-muted-foreground">{success.body}</p>
 
         <div className="mt-6 rounded-card bg-muted px-5 py-4">
@@ -134,20 +139,24 @@ export function RegisterFormFields({ districts, stages, labels, stageLabel, stag
           </span>
         </div>
 
-        <RegisterPassCard
-          className="mt-6"
-          registrationId={result.registrationId}
-          fullName={result.fullName}
-          district={result.district}
-          pathway={result.pathway}
-          issued={issued}
-        />
+        {/* No preview of the pass on screen. It used to be drawn in HTML beside
+            the download, which only worked while this file also drew the PDF —
+            now the document is fixed artwork, an HTML lookalike would be a
+            second design claiming to be the first, and the two would drift the
+            moment the artwork is replaced. The file itself is one tap away. */}
 
         <div className="mt-6 flex flex-wrap gap-4">
-          <Button type="button" size="md" onClick={downloadPass} className="w-full sm:w-auto">
+          {/* A plain anchor, not a button with a click handler: `download` on a
+              blob URL is what the browser already knows how to do, and it keeps
+              working with JavaScript mid-flight or a middle-click. */}
+          <a
+            href={result.passUrl}
+            download={`startup-e-plus-pass-${result.registrationId}.pdf`}
+            className={cn(buttonVariants({ size: "md" }), "w-full sm:w-auto")}
+          >
             <Download aria-hidden="true" className="size-4" strokeWidth={2} />
             {success.download}
-          </Button>
+          </a>
           <Link
             href={result.next}
             className={cn(buttonVariants({ variant: "outline", size: "md" }), "w-full sm:w-auto")}
@@ -164,117 +173,159 @@ export function RegisterFormFields({ districts, stages, labels, stageLabel, stag
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} noValidate className="flex flex-col gap-8">
-      <div className="grid gap-6 sm:grid-cols-2">
-        <Field
-          id="fullName"
-          label={labels.fullName}
-          required
-          hint={labels.fullNameHint}
-          error={err("fullName")}
-          className="sm:col-span-2"
-        >
-          <input
+      {/* ---------- About you ---------- */}
+      <fieldset className="flex flex-col gap-6">
+        <legend className="mb-4 eyebrow text-muted-foreground">{legends.you}</legend>
+
+        <div className="grid gap-6 sm:grid-cols-2">
+          <Field
             id="fullName"
-            type="text"
-            autoComplete="name"
-            className={controlClasses}
-            aria-invalid={!!err("fullName")}
-            aria-describedby={describedBy("fullName", { hint: true, error: err("fullName") })}
-            {...register("fullName")}
-          />
-        </Field>
-
-        <Field id="email" label={labels.email} required error={err("email")}>
-          <input
-            id="email"
-            type="email"
-            inputMode="email"
-            autoComplete="email"
-            className={controlClasses}
-            aria-invalid={!!err("email")}
-            aria-describedby={describedBy("email", { error: err("email") })}
-            {...register("email")}
-          />
-        </Field>
-
-        <Field
-          id="whatsapp"
-          label={labels.whatsapp}
-          required
-          hint={labels.whatsappHint}
-          error={err("whatsapp")}
-        >
-          <input
-            id="whatsapp"
-            type="tel"
-            inputMode="tel"
-            autoComplete="tel"
-            placeholder="98765 43210"
-            className={controlClasses}
-            aria-invalid={!!err("whatsapp")}
-            aria-describedby={describedBy("whatsapp", { hint: true, error: err("whatsapp") })}
-            {...register("whatsapp")}
-          />
-        </Field>
-
-        <Field id="district" label={labels.district} required error={err("district")}>
-          <select
-            id="district"
-            className={controlClasses}
-            aria-invalid={!!err("district")}
-            aria-describedby={describedBy("district", { error: err("district") })}
-            {...register("district")}
+            label={labels.fullName}
+            required
+            hint={labels.fullNameHint}
+            error={err("fullName")}
+            className="sm:col-span-2"
           >
-            <option value="">Select…</option>
-            {districts.map((district) => (
-              <option key={district} value={district}>
-                {district}
-              </option>
-            ))}
-          </select>
-        </Field>
-      </div>
+            <input
+              id="fullName"
+              type="text"
+              autoComplete="name"
+              className={controlClasses}
+              aria-invalid={!!err("fullName")}
+              aria-describedby={describedBy("fullName", { hint: true, error: err("fullName") })}
+              {...register("fullName")}
+            />
+          </Field>
 
-      {/* A radio group, not a <Field>: Field ties one <label htmlFor> to one
-          control, which is wrong for a group. This is the fieldset/legend idiom
-          the beginner form already uses for its funding-history checkboxes. Two
-          options also do not justify a select, which on a phone costs a sheet
-          to open, choose and dismiss for one bit of information. */}
-      <fieldset>
-        <legend className="text-small font-medium text-foreground">
-          {stageLabel}
-          <span aria-hidden="true" className="ml-0.5 text-destructive">
-            *
-          </span>
-        </legend>
-        <p className="mt-1 text-caption text-muted-foreground">{stageHint}</p>
+          <Field id="age" label={labels.age} required error={err("age")}>
+            <input
+              id="age"
+              type="number"
+              inputMode="numeric"
+              min={14}
+              max={99}
+              className={controlClasses}
+              aria-invalid={!!err("age")}
+              aria-describedby={describedBy("age", { error: err("age") })}
+              {...register("age")}
+            />
+          </Field>
 
-        <div className="mt-3 grid gap-3">
-          {stages.map((stage) => (
-            <label
-              key={stage.value}
-              className="flex cursor-pointer items-start gap-3 rounded-input border border-border bg-background px-4 py-3 transition-colors has-[:checked]:border-indigo has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring/40"
+          <Field id="occupation" label={labels.occupation} required error={err("occupation")}>
+            <Select
+              id="occupation"
+              aria-invalid={!!err("occupation")}
+              aria-describedby={describedBy("occupation", { error: err("occupation") })}
+              {...register("occupation")}
             >
-              <input
-                type="radio"
-                value={stage.value}
-                className="mt-1 size-4 shrink-0 accent-primary"
-                aria-describedby={describedBy("stage", { error: err("stage") })}
-                {...register("stage")}
-              />
-              <span>
-                <span className="block text-small font-medium text-foreground">{stage.title}</span>
-                <span className="mt-1 block text-caption text-muted-foreground">{stage.text}</span>
-              </span>
-            </label>
-          ))}
+              <option value="">Select…</option>
+              {occupations.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </Select>
+          </Field>
         </div>
+      </fieldset>
 
-        {err("stage") && (
-          <p id="stage-error" role="alert" className="mt-2 text-caption text-destructive">
-            {err("stage")}
-          </p>
-        )}
+      {/* ---------- How to reach you ---------- */}
+      <fieldset className="flex flex-col gap-6">
+        <legend className="mb-4 eyebrow text-muted-foreground">{legends.reach}</legend>
+
+        <div className="grid gap-6 sm:grid-cols-2">
+          <Field
+            id="email"
+            label={labels.email}
+            required
+            error={err("email")}
+            className="sm:col-span-2"
+          >
+            <input
+              id="email"
+              type="email"
+              inputMode="email"
+              autoComplete="email"
+              className={controlClasses}
+              aria-invalid={!!err("email")}
+              aria-describedby={describedBy("email", { error: err("email") })}
+              {...register("email")}
+            />
+          </Field>
+
+          <Field
+            id="phone"
+            label={labels.phone}
+            required
+            hint={labels.phoneHint}
+            error={err("phone")}
+          >
+            <input
+              id="phone"
+              type="tel"
+              inputMode="tel"
+              autoComplete="tel"
+              placeholder="98765 43210"
+              className={controlClasses}
+              aria-invalid={!!err("phone")}
+              aria-describedby={describedBy("phone", { hint: true, error: err("phone") })}
+              {...register("phone")}
+            />
+          </Field>
+
+          <Field
+            id="altPhone"
+            label={labels.altPhone}
+            hint={labels.altPhoneHint}
+            error={err("altPhone")}
+          >
+            <input
+              id="altPhone"
+              type="tel"
+              inputMode="tel"
+              placeholder="98765 43210"
+              className={controlClasses}
+              aria-invalid={!!err("altPhone")}
+              aria-describedby={describedBy("altPhone", { hint: true, error: err("altPhone") })}
+              {...register("altPhone")}
+            />
+          </Field>
+
+          <Field
+            id="address"
+            label={labels.address}
+            required
+            hint={labels.addressHint}
+            error={err("address")}
+            className="sm:col-span-2"
+          >
+            <textarea
+              id="address"
+              rows={3}
+              autoComplete="street-address"
+              className={cn(controlClasses, "resize-y")}
+              aria-invalid={!!err("address")}
+              aria-describedby={describedBy("address", { hint: true, error: err("address") })}
+              {...register("address")}
+            />
+          </Field>
+
+          <Field id="district" label={labels.district} required error={err("district")}>
+            <Select
+              id="district"
+              aria-invalid={!!err("district")}
+              aria-describedby={describedBy("district", { error: err("district") })}
+              {...register("district")}
+            >
+              <option value="">Select…</option>
+              {districts.map((district) => (
+                <option key={district} value={district}>
+                  {district}
+                </option>
+              ))}
+            </Select>
+          </Field>
+        </div>
       </fieldset>
 
       {/* Honeypot — hidden from assistive tech and out of the tab order, so only

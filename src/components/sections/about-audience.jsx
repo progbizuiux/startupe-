@@ -15,9 +15,12 @@ const ICONS = {
 
 /**
  * "Who it's for": six white cards on the muted band, each with an indigo-tinted
- * icon tile. The band is the one grey stretch on the page — it separates the
- * two long reference sections (the partner institutions above, the delivery
- * agency below) and gives the cards something to sit on.
+ * icon tile.
+ *
+ * Renders on the HOME page, not on About, although it still lives among the
+ * about-* files and reads its copy from src/data/about-page.js. The grey band
+ * is what keeps it from reading as a repeat of the phase cards directly above
+ * it: those are grey cards on white, these are white cards on grey.
  */
 export function AboutAudience() {
   const { audience } = aboutPage;

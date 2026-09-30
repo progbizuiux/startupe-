@@ -1,3 +1,4 @@
+import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 /** Shared look for text inputs, selects and textareas. */
@@ -19,6 +20,37 @@ export const controlClasses =
   "focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring/40 focus-visible:outline-none " +
   "aria-[invalid=true]:border-destructive aria-[invalid=true]:ring-destructive/25 " +
   "disabled:cursor-not-allowed disabled:opacity-60";
+
+/**
+ * A <select> in the shared control styling, drawing its own chevron.
+ *
+ * The native arrow had to go. Chrome paints it in a fixed slot hard against
+ * the right border and ignores padding-right entirely — that padding moves the
+ * text, not the glyph — so the arrow sat tight to the edge while the text
+ * started 16px in, and the control read as lopsided. Firefox and Safari each
+ * draw a different glyph in a different spot, so the native one was never
+ * consistent anyway.
+ *
+ * `appearance-none` drops all of it. The icon is `right-4` to mirror the
+ * `px-4` on the other side, and `pr-11` keeps a long option from running under
+ * it. It is a real element rather than a background-image SVG so the colour
+ * stays the muted-foreground token — a data URI cannot read a CSS variable,
+ * and would mean writing the hex out for light and dark separately.
+ */
+export function Select({ className, children, ...props }) {
+  return (
+    <div className="relative">
+      <select className={cn(controlClasses, "appearance-none pr-11", className)} {...props}>
+        {children}
+      </select>
+      {/* pointer-events-none so a click on the chevron still opens the menu. */}
+      <ChevronDown
+        aria-hidden="true"
+        className="pointer-events-none absolute top-1/2 right-4 size-4 -translate-y-1/2 text-muted-foreground"
+      />
+    </div>
+  );
+}
 
 /**
  * Label + control + hint/error wrapper.

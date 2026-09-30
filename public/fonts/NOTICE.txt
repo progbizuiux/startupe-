@@ -1,0 +1,40 @@
+geist-regular.ttf
+=================
+
+Geist Regular, version 1.800.
+
+  Copyright 2024 The Geist Project Authors
+  (https://github.com/vercel/geist-font.git)
+
+  Design: Basement.studio, Andres Briganti, Mateo Zaragoza
+  Vendor: Basement.studio, Vercel
+
+  "This Font Software is licensed under the SIL Open Font License,
+   Version 1.1. This license is available with a FAQ at:
+   https://openfontlicense.org"
+
+Every line above is read out of the font file's own `name` table
+(nameID 0, 5, 8, 9, 13, 14) - it is the designers' own statement of the
+terms, not a second-hand summary.
+
+The full licence text is in OFL.txt beside this file, which OFL clause 1
+requires to travel with any redistribution of the font. It was taken from
+the font's own repository (vercel/geist-font) rather than from a generic
+copy of the licence, so the copyright line in it is the one the authors
+published, and it matches the `name` table above.
+
+WHERE THIS FILE CAME FROM
+-------------------------
+node_modules/next/dist/compiled/@vercel/og/Geist-Regular.ttf, byte for
+byte. It is copied into the repository rather than read from there at run
+time because that is a private path inside another package, free to move
+on any Next upgrade and not guaranteed to be traced into a serverless
+bundle. It is used by src/lib/register-pass.js to set the three filled
+values on the registration pass.
+
+A NOTE ON AN EARLIER MISTAKE
+----------------------------
+This directory briefly shipped a file named geist-LICENSE.txt containing
+the Mozilla Public License 2.0. That was wrong: MPL-2.0 is the licence of
+the `@vercel/og` npm package the font was copied out of, NOT the licence
+of the font inside it. It has been deleted. Do not restore it.

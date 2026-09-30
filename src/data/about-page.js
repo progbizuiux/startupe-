@@ -17,7 +17,7 @@ export const aboutPage = {
     titleLines: ["Kerala's greatest resource", "has always"],
     titleHighlight: "been its people",
     description:
-      "Startup E+ is an entrepreneurship initiative launched by Shafi Parambil MP, born from a simple conviction — that Kerala's future is best built here, by the people who already call it home.",
+      "Startup E+ is an entrepreneurship initiative launched by Shafi Parambil MP, born from a simple conviction: that Kerala's future is best built here, by the people who already call it home.",
     stats: [
       { value: "05", label: "Phases, from idea to investment" },
       { value: "05", label: "Institutional partners" },
@@ -40,13 +40,13 @@ export const aboutPage = {
     body: [
       "For years, talented and capable young minds from this region have moved away in search of careers, taking their ideas, energy and potential with them. Startup E+ exists to change that pattern, by building a home-grown ecosystem where enterprise can be imagined, nurtured and sustained right here in Vadakara.",
       "At its heart, Startup E+ is about shifting how people see themselves and their possibilities. It reimagines entrepreneurship not as a risky exception reserved for a lucky few, but as a natural and achievable path open to students, homemakers, working professionals and small business owners alike.",
-      "Whether someone is holding on to a half-formed idea, running a business that has hit a rough patch, or is simply curious about what it takes to build something of their own, Startup E+ is designed to meet them there — with the right guidance, the right people and the right encouragement at the right time.",
+      "Whether someone is holding on to a half-formed idea, running a business that has hit a rough patch, or is simply curious about what it takes to build something of their own, Startup E+ is designed to meet them there, with the right guidance, the right people and the right encouragement at the right time.",
       "What makes this initiative different is its long-term, people-rooted approach. Rather than treating entrepreneurship as a one-off event to attend, Startup E+ treats it as an ongoing relationship: mentorship from those who have already walked the path, partnerships with institutions that bring credibility and structure, and a genuine belief that local ideas deserve local investment.",
       "Every conversation, every connection and every opportunity created through Startup E+ is aimed at keeping talent, wealth and ambition rooted within the community rather than letting them drift away.",
     ],
     /* Closing pull quote, set with the gold rule used by the home "message" section */
     quote:
-      "Startup E+ is a statement of trust in Kerala's own people — a belief that, given the right support, they can build enterprises that not only sustain themselves but strengthen the region around them. It is less about starting businesses, and more about starting a movement.",
+      "Startup E+ is a statement of trust in Kerala's own people: a belief that, given the right support, they can build enterprises that not only sustain themselves but strengthen the region around them. It is less about starting businesses, and more about starting a movement.",
   },
 
   /* ---------- Dark band: the gap the mission was built to close ---------- */
@@ -57,7 +57,7 @@ export const aboutPage = {
     headline: [
       "Kerala has always been a state of extraordinary ",
       { text: "human potential", highlight: "pink" },
-      " — yet for decades that potential has quietly ",
+      ", yet for decades that potential has quietly ",
       { text: "moved outward", highlight: "yellow" },
     ],
     gaps: [
@@ -75,7 +75,7 @@ export const aboutPage = {
         text: "Communities receive short-term relief when what they actually need are long-term tools for self-reliance.",
       },
     ],
-    body: "Startup E+ was built as a direct answer to that gap — a full-spectrum entrepreneurship ecosystem that takes a complete beginner from a raw idea all the way to a legally registered, financially structured and investor-ready enterprise.",
+    body: "Startup E+ was built as a direct answer to that gap: a full-spectrum entrepreneurship ecosystem that takes a complete beginner from a raw idea all the way to a legally registered, financially structured and investor-ready enterprise.",
     statement: "A movement from Vadakara, for Kerala.",
     attribution: "An initiative under Shafi Parambil MP",
   },
@@ -85,12 +85,12 @@ export const aboutPage = {
     eyebrow: "How it works",
     heading: "Five phases, from a first conversation to real capital",
     description:
-      "Each phase carries a founder further than the last, and no one has to start at the beginning — the pathway meets people wherever they already are.",
+      "Each phase carries a founder further than the last, and no one has to start at the beginning. The pathway meets people wherever they already are.",
     items: [
       {
         label: "Phase 01",
         title: "Building the Foundation",
-        text: "Entrepreneurship begins inside schools, colleges, youth clubs and women's collectives. Dedicated Entrepreneurship Clubs (E-Clubs) introduce business thinking as a natural part of learning and community life — turning youth energy toward productive pursuits, and helping women's collectives shape everyday skills into real consumer brands and services.",
+        text: "Entrepreneurship begins inside schools, colleges, youth clubs and women's collectives. Dedicated Entrepreneurship Clubs (E-Clubs) introduce business thinking as a natural part of learning and community life, turning youth energy toward productive pursuits, and helping women's collectives shape everyday skills into real consumer brands and services.",
       },
       {
         label: "Phase 02",
@@ -100,23 +100,23 @@ export const aboutPage = {
       {
         label: "Phase 03",
         title: "Turning Ideas into Action",
-        text: "Structured hackathons — run separately for students, youth and women — convert loose ideas into early business models built around real regional problems. Alongside them, a dedicated diagnostic track reviews existing struggling ventures to identify exactly what is holding them back.",
+        text: "Structured hackathons, run separately for students, youth and women, convert loose ideas into early business models built around real regional problems. Alongside them, a dedicated diagnostic track reviews existing struggling ventures to identify exactly what is holding them back.",
       },
       {
         label: "Phase 04",
         title: "Professional Training and Recovery",
-        text: "The Startup Conclave delivers hands-on training in legal compliance, unit economics and operations — helping students and young founders structure their ideas, and women-led ventures formalise and scale. A parallel stabilisation track supports struggling businesses in correcting course and rebuilding a sustainable footing.",
+        text: "The Startup Conclave delivers hands-on training in legal compliance, unit economics and operations, helping students and young founders structure their ideas, and women-led ventures formalise and scale. A parallel stabilisation track supports struggling businesses in correcting course and rebuilding a sustainable footing.",
       },
       {
         label: "Phase 05",
         title: "Connecting to Capital",
-        text: "Refined ventures — from validated student ideas to scaling youth businesses, formalising women-led enterprises and recovered businesses — are presented to banks, investors and funding partners through the Investors' Meet, connecting local ideas to real growth capital.",
+        text: "From validated student ideas to scaling youth businesses, formalising women-led enterprises and recovered businesses, refined ventures are presented to banks, investors and funding partners through the Investors' Meet, connecting local ideas to real growth capital.",
       },
     ],
     /* The accent tile that closes the grid */
     outcome: {
       title: "Where it leads",
-      text: "A permanent, supported pathway from thought to enterprise — with a digital portal and a peer-led mentorship syndicate making sure ventures do not just launch, but survive, grow and scale.",
+      text: "A permanent, supported pathway from thought to enterprise, with a digital portal and a peer-led mentorship syndicate making sure ventures do not just launch, but survive, grow and scale.",
       cta: { label: "Register Now", href: "/#cta" },
     },
   },
@@ -132,7 +132,7 @@ export const aboutPage = {
         name: "IIM Kozhikode",
         unit: "IIMK LIVE",
         role: "Business & strategy",
-        text: "Provides paid business consultation for enterprises seeking to scale — marketing, branding, business planning, costing, fundraising and market strategy. It also runs training and masterclasses for entrepreneurs, including affordable programmes for beginners, and connects promising enterprises with experienced mentors, incubation opportunities and investor networks.",
+        text: "Provides paid business consultation for enterprises seeking to scale: marketing, branding, business planning, costing, fundraising and market strategy. It also runs training and masterclasses for entrepreneurs, including affordable programmes for beginners, and connects promising enterprises with experienced mentors, incubation opportunities and investor networks.",
       },
       {
         name: "NIT Calicut",
@@ -168,7 +168,7 @@ export const aboutPage = {
     eyebrow: "Who it's for",
     heading: "Built for anyone serious about building something that lasts",
     description:
-      "At any stage of that journey — the first idea, the first hire, the first hard year, or the cheque that makes the next one possible.",
+      "At any stage of that journey: the first idea, the first hire, the first hard year, or the cheque that makes the next one possible.",
     /* `icon` maps to the lucide icon picked in about-audience.jsx */
     items: [
       {
@@ -189,7 +189,7 @@ export const aboutPage = {
       {
         icon: "founder",
         title: "The working entrepreneur",
-        text: "Who has started something and wants to sharpen it — unit economics, legal compliance, investor communication, market strategy.",
+        text: "Who has started something and wants to sharpen it: unit economics, legal compliance, investor communication, market strategy.",
       },
       {
         icon: "recovery",
@@ -211,8 +211,8 @@ export const aboutPage = {
     intro:
       "WeCan Social Innovators is the professional agency responsible for planning, managing and delivering every part of Startup E+.",
     body: [
-      "Bringing real experience, professional discipline and deep community understanding to this mission, the agency handles every phase end to end — setting up Entrepreneurship Clubs across schools, colleges, youth clubs and women's self-help groups, running the Caravan Campaign, organising hackathons, delivering the Startup Conclave, managing the digital portal, and bringing founders and investors together at the flagship Investors' Meet.",
-      "Beyond programme delivery, the agency coordinates every partner connected to this mission — business schools, technical institutions, the Kerala Startup Mission, banks and investor networks — so that participants receive the right guidance, the right resources and the right connections at each stage of their journey.",
+      "Bringing real experience, professional discipline and deep community understanding to this mission, the agency handles every phase end to end: setting up Entrepreneurship Clubs across schools, colleges, youth clubs and women's self-help groups, running the Caravan Campaign, organising hackathons, delivering the Startup Conclave, managing the digital portal, and bringing founders and investors together at the flagship Investors' Meet.",
+      "Beyond programme delivery, the agency coordinates every partner connected to this mission, from business schools and technical institutions to the Kerala Startup Mission, banks and investor networks, so that participants receive the right guidance, the right resources and the right connections at each stage of their journey.",
     ],
     responsibilities: [
       "Entrepreneurship Clubs",

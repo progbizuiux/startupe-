@@ -18,6 +18,13 @@ import { Container } from "@/components/ui/container";
  * the cluster is composed in code from `cta.avatars`, with the positions/sizes
  * as percentages (see src/data/cta.js) so it scales with the viewport instead of
  * reflowing.
+ *
+ * `last:mb-section`, not a plain `mb-section`: the band's own padding is all it
+ * needs against another section, and the bottom margin exists purely to keep it
+ * off the footer. On every page but the home page this IS the last section, so
+ * the margin applies exactly as before. On the home page the FAQ now follows
+ * it, and an unconditional margin stacked with that section's own top padding
+ * to put 171px above its heading where every other boundary gets 86px.
  */
 export function Cta() {
   if (cta.background?.src) {
@@ -28,7 +35,7 @@ export function Cta() {
       <section
         id="cta"
         style={cta.background.color ? { backgroundColor: cta.background.color } : undefined}
-        className="relative mb-section overflow-hidden bg-indigo py-10 lg:py-0"
+        className="relative overflow-hidden bg-indigo py-10 last:mb-section lg:py-0"
       >
         <Container className="relative z-10">
           <div className="text-background lg:flex lg:min-h-[381px] lg:max-w-[46%] lg:flex-col lg:justify-center lg:py-10">
@@ -70,7 +77,7 @@ export function Cta() {
   }
 
   return (
-    <section id="cta" className="mb-section overflow-hidden bg-indigo py-10 lg:py-0">
+    <section id="cta" className="overflow-hidden bg-indigo py-10 last:mb-section lg:py-0">
       <Container>
         {/* From lg the cluster sets the band height (Figma: 381px); the copy keeps
             its own padding so it never touches the edges on narrower screens. */}

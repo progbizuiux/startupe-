@@ -22,11 +22,13 @@ export const siteConfig = {
     { label: "About", href: "/about" }, // the About page
     { label: "Partners", href: "/#partners" }, // "Built with Kerala's best" strip
     { label: "Contact", href: "/contact" }, // the Contact page
-    { label: "Register", href: "/register" }, // the Register page
+    /* No "Register" link: the button to its right already goes to /register,
+       and two header items pointing at the same page made the button read as a
+       duplicate rather than the one thing to press. */
   ],
 
   /* Header: right-side button (desktop header and the mobile menu) */
-  cta: { label: "Join the Movement", href: "/register" },
+  cta: { label: "Join the Grand Launch", href: "/register" },
 
   /* Footer social icons (keys must match src/components/ui/social-icons.jsx).
      The footer renders one icon per entry, so an account without a real URL is

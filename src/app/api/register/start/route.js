@@ -1,8 +1,10 @@
+import { after } from "next/server";
 import { siteConfig } from "@/config/site";
 import { isCrmConfigured, sendLead } from "@/lib/crm";
 import { createRegistrationId } from "@/lib/registration-id";
 import { buildRegistrationPass } from "@/lib/register-pass";
-import { registerStartSchema, stageDetails } from "@/lib/register-start-schema";
+import { isRegistrationEmailConfigured, sendRegistrationEmail } from "@/lib/registration-email";
+import { registerStartSchema, occupationDetails } from "@/lib/register-start-schema";
 
 /**
  * The /register front door.
@@ -20,11 +22,17 @@ import { registerStartSchema, stageDetails } from "@/lib/register-start-schema";
  *   4. render the PDF
  *   5. send to the CRM
  *
- * The PDF is rendered BEFORE the CRM call on purpose. It costs a few
- * milliseconds and no network, and doing it first means a rendering failure
+ * The PDF is rendered BEFORE the CRM call on purpose: a rendering failure then
  * returns an error with nothing sent, so the visitor can simply try again. The
  * other way round, a throw in the renderer would strand a registration the CRM
  * had already accepted, and the retry would file it twice.
+ *
+ * It is not free. Rendering measures around 110ms, and because pdf-lib is
+ * synchronous that is ~45ms of solid event-loop block — on a single Node
+ * process, several registrations landing together will delay whatever else is
+ * in flight. Worth knowing before this is put behind one small instance; it is
+ * still the right order, because the alternative trades latency for duplicate
+ * registrations.
  */
 
 /* Larger than 10s so the CRM's own timeout (see TIMEOUT_MS in lib/crm.js) can
@@ -78,6 +86,91 @@ function wrongOrigin(request) {
   }
 }
 
+/**
+ * A successful registration answers with the pass itself, not with JSON.
+ *
+ * The artwork is a 1.8MB Photoshop export, so base64ing it into a JSON body
+ * would push a ~2.3MB string down the wire — a third of it pure encoding
+ * overhead — to someone who is very likely on a phone. Sent as bytes it is the
+ * file and nothing more, and the browser can save it straight off.
+ *
+ * The three things the success panel needs besides the file ride along as
+ * headers. They are readable here because the request is same-origin; a
+ * cross-origin caller would need Access-Control-Expose-Headers, which is
+ * exactly the caller this endpoint refuses anyway.
+ *
+ * Errors still answer with JSON, so the client branches on content-type.
+ */
+/**
+ * Queue the registrant's confirmation email, to go out once the response has.
+ *
+ * `after()` and not `await`: the visitor already has the pass in the response,
+ * so nothing about their registration is waiting on an email. Awaiting it would
+ * add the provider's round trip — and, on a bad day, its 10s timeout — to a
+ * request that has already done everything that matters. Fire-and-forget
+ * without `after()` would be worse again: on a serverless platform the function
+ * can be frozen the moment the response is written, and the send would simply
+ * never happen.
+ *
+ * A failure here is logged and goes no further. The email is a convenience, the
+ * registration is already filed, and the pass is already in the browser.
+ */
+/**
+ * Everything the confirmation email needs, gathered in one place so the two
+ * call sites cannot pass different things.
+ *
+ * `pathway: occupation.label` matches what the pass prints under "Registration
+ * Pathway"; `portal` is the separate thing the next-step button names.
+ */
+const mailFor = (data, registrationId, occupation, passBytes) => ({
+  to: data.email,
+  fullName: data.fullName,
+  registrationId,
+  pathway: occupation.label,
+  portal: occupation.portal,
+  nextUrl: occupation.next,
+  passBytes,
+});
+
+function queueRegistrationEmail(registration) {
+  if (!isRegistrationEmailConfigured()) {
+    console.warn(
+      "[register] MAIL_USER / MAIL_APP_PASSWORD are not set - no confirmation email sent to",
+      registration.to,
+    );
+    return;
+  }
+
+  after(async () => {
+    const mail = await sendRegistrationEmail(registration);
+    if (mail.ok) {
+      console.info("[register] confirmation email sent", registration.registrationId);
+    } else {
+      console.error(
+        "[register] confirmation email failed",
+        registration.registrationId,
+        mail.status ?? "",
+        mail.error,
+      );
+    }
+  });
+}
+
+const passResponse = (bytes, registrationId, occupation) =>
+  new Response(bytes, {
+    status: 201,
+    headers: {
+      "Content-Type": "application/pdf",
+      "Content-Disposition": `attachment; filename="startup-e-plus-pass-${registrationId}.pdf"`,
+      "Content-Length": String(bytes.length),
+      /* nothing about a personal pass belongs in a shared cache */
+      "Cache-Control": "no-store",
+      "X-Registration-Id": registrationId,
+      "X-Registration-Pathway": occupation.portal,
+      "X-Registration-Next": occupation.next,
+    },
+  });
+
 export async function POST(request) {
   if (wrongOrigin(request)) {
     return Response.json({ ok: false, error: "Bad origin" }, { status: 403 });
@@ -123,19 +216,23 @@ export async function POST(request) {
   }
 
   const { website: _honeypot, ...data } = parsed.data;
-  const stage = stageDetails(data.stage);
+  const occupation = occupationDetails(data.occupation);
   const registrationId = createRegistrationId();
 
   /* Render first — see the note at the top of this file. */
-  let pass;
+  let passBytes;
   try {
-    const bytes = await buildRegistrationPass({
+    passBytes = await buildRegistrationPass({
       registrationId,
       fullName: data.fullName,
-      district: data.district,
-      pathway: stage.portal,
+      /* The pass prints what the person chose — "Student", "Entrepreneur",
+         "Business" — not the portal it routes them to. The portal is an
+         internal name for a stage of the programme; the answer they gave is the
+         one they will recognise on a document a year from now. It still goes on
+         the lead and still steers the next step, both as occupation.portal
+         below. */
+      pathway: occupation.label,
     });
-    pass = Buffer.from(bytes).toString("base64");
   } catch (error) {
     console.error("[register] could not render the pass", error);
     return Response.json(
@@ -144,11 +241,24 @@ export async function POST(request) {
     );
   }
 
-  const lead = { ...data, registrationId, pathway: stage.portal, next: stage.next };
+  /* occupationLabel rather than the raw "student" / "entrepreneur": the value is
+     read by a person working the CRM queue, not matched by anything. */
+  const lead = {
+    ...data,
+    registrationId,
+    occupationLabel: occupation.label,
+    pathway: occupation.portal,
+    next: occupation.next,
+  };
 
   /* What is safe to log: enough to follow a registration up by hand, without
      writing the whole record into the server log on every CRM outage. */
-  const forLog = { registrationId, email: data.email, district: data.district, stage: data.stage };
+  const forLog = {
+    registrationId,
+    email: data.email,
+    district: data.district,
+    occupation: data.occupation,
+  };
 
   if (!isCrmConfigured()) {
     if (process.env.NODE_ENV === "production") {
@@ -159,10 +269,15 @@ export async function POST(request) {
       );
     }
     console.warn("[register] CRM not configured - registration logged only", forLog);
-    return Response.json(
-      { ok: true, registrationId, pathway: stage.portal, next: stage.next, pass },
-      { status: 201 },
-    );
+    /* Queued here too, and deliberately: this branch is development only (the
+       production path returned 500 above), and it is the only way to exercise
+       the email without live CRM credentials — which is what testing against
+       the real CRM costs, a junk lead per attempt. The trade is that a
+       developer running with mail configured can send "your registration has
+       gone through" for one the CRM never saw. That is entirely within a
+       developer's control; junk in the client's CRM is not. */
+    queueRegistrationEmail(mailFor(data, registrationId, occupation, passBytes));
+    return passResponse(passBytes, registrationId, occupation);
   }
 
   /* sendLead resolves rather than throws on every failure, including its own
@@ -188,8 +303,9 @@ export async function POST(request) {
     );
   }
 
-  return Response.json(
-    { ok: true, registrationId, pathway: stage.portal, next: stage.next, pass },
-    { status: 201 },
-  );
+  /* Only past the CRM check: the email says the registration went through, so
+     it must not go out for one that did not. */
+  queueRegistrationEmail(mailFor(data, registrationId, occupation, passBytes));
+
+  return passResponse(passBytes, registrationId, occupation);
 }

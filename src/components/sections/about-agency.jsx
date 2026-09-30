@@ -11,8 +11,15 @@ import { Container } from "@/components/ui/container";
 export function AboutAgency() {
   const { agency } = aboutPage;
 
+  /* On the grey band because it is now the last long section before the CTA.
+     That job used to belong to "Who it's for", which sat between this and the
+     stakeholder list and has since moved to the home page; without a band
+     somewhere in here the page runs about 2,100px of unbroken white between the
+     dark mission band and the indigo CTA. It goes on this section rather than
+     the stakeholder list above because that list is ruled rows carrying small
+     `bg-muted` pills, which a grey band would wash out. */
   return (
-    <section id="agency" className="section-y">
+    <section id="agency" className="bg-muted section-y">
       <Container>
         {/* No `items-center`: from lg the two columns stretch to the same height
             and the photo is cropped to whatever the copy comes out to, so the

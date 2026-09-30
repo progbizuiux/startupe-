@@ -1,45 +1,143 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
+import {
+  PDFDocument,
+  TextRenderingMode,
+  popGraphicsState,
+  pushGraphicsState,
+  rgb,
+  setLineWidth,
+  setStrokingColor,
+  setTextRenderingMode,
+} from "pdf-lib";
+import fontkit from "@pdf-lib/fontkit";
 
 /**
- * The registration pass PDF, laid out like the event ticket the design was
- * taken from: an information block on the left, a diagonally-cut photograph
- * through the middle, and a panel on the right whose "Name" and "Registration
- * ID" rules are filled in with the holder's details.
+ * The registration pass PDF.
+ *
+ * The design is not drawn here — it is the supplied ticket artwork, loaded
+ * whole and written onto. `PDFDocument.load` keeps every page object exactly as
+ * Photoshop exported it (six images, the blue field boxes, the printed
+ * headings), and all this module does is draw three strings into the boxes
+ * already printed on it. Nothing else about the document is touched.
  *
  * Server only: pdf-lib has no business in a client bundle, and this reads from
  * the filesystem. Never import it into a client component.
- *
- * Built from StandardFonts (Helvetica) rather than an embedded face. That keeps
- * the file small and adds no font asset to the repo, but it means the document
- * can only encode WinAnsi — which is why `sanitise` below is not optional and
- * why the schema restricts a name to Latin letters. pdf-lib THROWS on an
- * unencodable glyph, and it would throw at exactly the moment someone is
- * waiting for their pass.
  */
 
-/* The site's own palette, from src/styles/tokens.css. */
-const PAPER = rgb(1, 1, 1);
-const BRAND = rgb(0.125, 0.49, 0.929); // --brand-500 #207ded
-const INK = rgb(0.067, 0.067, 0.067); // --ink-950 #111111
-const MUTED = rgb(0.443, 0.443, 0.478); // --ink-500 #71717a
-const RULE = rgb(0.83, 0.83, 0.85);
+const TEMPLATE = path.join(process.cwd(), "public", "images", "registration-pass-template.pdf");
 
-/* The reference ticket's own proportions: 582 x 181pt, a shade over 3:1. */
-const W = 582;
-const H = 181;
+/**
+ * The face the values are set in.
+ *
+ * NOT the artwork's own BomstadDisplay-Medium, and not for want of trying: the
+ * template embeds a SUBSET of it containing exactly nineteen glyphs — space and
+ * `D I N P R a e g h i m n o r s t w y`, which is precisely the letters needed
+ * to print "Name", "ID" and "Registration Pathway" and nothing more. Every
+ * other character, including all ten digits, has no outline in the file. A
+ * registration ID set in it would come out blank.
+ *
+ * Geist was picked by measuring rather than by eye. Across those nineteen
+ * glyphs — the only ones where the artwork's own widths can be read — its
+ * advances sit a mean 44 units (per 1000em) from Bomstad's, against 66 for
+ * Helvetica and 58 for Helvetica-Bold, and its x-height-to-cap ratio (0.746) is
+ * nearer Bomstad's 0.768 than either. It is also SIL OFL 1.1, so it ships with
+ * the repo legitimately; the licence sits beside it.
+ *
+ * Copied out of `next/dist/compiled/@vercel/og` rather than read from there at
+ * run time: that is a private path inside another package, free to move on any
+ * Next upgrade and not guaranteed to be traced into a serverless bundle.
+ */
+const FONT = path.join(process.cwd(), "public", "fonts", "geist-regular.ttf");
 
-/* The photo is a parallelogram leaning to the right, like the reference's. */
-const SLANT = 58;
-const PHOTO_L_BOTTOM = 150;
-const PHOTO_R_BOTTOM = 316;
-const PANEL_X = PHOTO_R_BOTTOM + SLANT + 14; // clear of the photo's top corner
+const INK = rgb(0.07, 0.07, 0.07);
 
-const ASSETS = path.join(process.cwd(), "public", "images");
-const LOGO_RATIO = 640 / 209;
-const PHOTO_RATIO = 640 / 500;
+/**
+ * Stroke width as a fraction of the type size, used to carry Geist Regular up
+ * to the artwork's Medium. 0.0115 is 0.15pt at the 13pt the fields are set in —
+ * picked by rendering 0, 0.1, 0.15, 0.2 and 0.3pt against the printed headings:
+ * below it the values still read light, and by 0.3 they read bold.
+ */
+const STROKE_RATIO = 0.0115;
 
+/**
+ * The artwork's three white boxes, in PDF points on its 595.2 x 280.56 page.
+ *
+ * These are measured, not estimated. The boxes are not vector rectangles — they
+ * are baked into the ticket's raster artwork — so they were found by rendering
+ * the template at 6x and scanning for the white runs. All three are identical
+ * and evenly spaced: 171.67 wide, 26.83 tall, centred at y 159.14, 106.31 and
+ * 51.14.
+ *
+ * Only the CENTRE of each box is stored, and the baseline is worked out at draw
+ * time. Hardcoding the baselines is what put the last set out: they were eyed
+ * in one at a time and drifted — 0.5pt low in the Name box, 1.7pt in the ID,
+ * 4.5pt in the Registration Pathway, which is a sixth of the box height and
+ * plainly visible as a gap above the text. Deriving it also keeps a name that
+ * fitSize has shrunk to 7pt centred, where a fixed baseline would leave it
+ * sitting low.
+ */
+const BOX = { left: 382.17, right: 553.83, padding: 12 };
+
+const FIELDS = {
+  name: { centreY: 159.14, size: 13 },
+  id: { centreY: 106.31, size: 13 },
+  pathway: { centreY: 51.14, size: 13 },
+};
+
+/**
+ * Geist's cap height, 710 units against an em of 1000, read from the OS/2 table
+ * of the file in public/fonts.
+ *
+ * Text is centred on the cap band rather than on the full ascender-to-descender
+ * height, which is what the eye reads as centred: with the full height, a value
+ * without descenders — "Business", "SEP-J99Y5-MD1SC", most names — would leave
+ * a reserved gap underneath and sit visibly high.
+ */
+const CAP_RATIO = 0.71;
+
+/**
+ * How wide a value may be: the box less equal padding on both sides.
+ *
+ * The old figure was 154 against a box inset 11.83 on the left, which left only
+ * 5.83 on the right — the text was allowed to run twice as close to one edge as
+ * the other.
+ */
+const TEXT_WIDTH = BOX.right - BOX.left - BOX.padding * 2;
+
+/**
+ * Both files, read once per process instead of once per registration.
+ *
+ * The template alone is 1.8MB and neither file changes between requests. A
+ * failed read is deliberately NOT cached — otherwise one transient error would
+ * leave every later registration failing against a rejected promise.
+ */
+let assets = null;
+function loadAssets() {
+  if (!assets) {
+    assets = Promise.all([fs.readFile(TEMPLATE), fs.readFile(FONT)]);
+    assets.catch(() => {
+      assets = null;
+    });
+  }
+  return assets;
+}
+
+/**
+ * Map a string into something the embedded font can set.
+ *
+ * The kept range stops at U+00FF, and that number is Geist's, not an arbitrary
+ * one: of the 400 code points between U+00C0 and U+024F the font has outlines
+ * for only 200, and the gaps are scattered — U+0114, U+012C, U+0138, U+014E,
+ * U+017F, and everything past U+017F bar a dozen. A character it lacks does not
+ * throw the way a standard font does: fontkit maps it to glyph 0 and the pass
+ * prints a .notdef box in the middle of someone's name. Latin-1 Supplement it
+ * covers without a hole, so the range is cut to there, and registerStartSchema
+ * rejects anything past it with a message the person sees before they submit.
+ *
+ * Control characters go regardless: drawText splits on newlines and draws each
+ * one downward, so a value carrying a newline would print over the box below.
+ */
 export function sanitise(value) {
   return String(value ?? "")
     .normalize("NFC")
@@ -47,177 +145,126 @@ export function sanitise(value) {
     .replace(/[“”]/g, '"')
     .replace(/[–—]/g, "-")
     .replace(/…/g, "...")
-    .replace(/[   ]/g, " ")
+    .replace(/[   ]/g, " ")
     .replace(/[\u0000-\u001F\u007F-\u009F]/g, " ")
     .replace(/[^ -~ -ÿ]/g, "")
     .replace(/\s+/g, " ")
     .trim();
 }
 
-/** Shrink until it fits, so a long name never runs past its rule. */
-function fitSize(text, font, max, startSize, minSize) {
-  let size = startSize;
-  while (size > minSize && font.widthOfTextAtSize(text, size) > max) size -= 0.5;
-  return size;
+/**
+ * Capital first letter of each word, lower case for the rest.
+ *
+ * People type their name on a phone — some with no capitals at all, some with
+ * caps lock on — and the pass should read the same either way, so the case is
+ * set here rather than trusted from the field: "anu k nair" and "ANU K NAIR"
+ * both print as "Anu K Nair".
+ *
+ * A word starts after a space, a hyphen, an apostrophe, a full stop or a
+ * comma — every separator LATIN_NAME lets through — so
+ * "mary-jane o'brien" becomes "Mary-Jane O'Brien".
+ *
+ * The cost of lowering, and it is a real one: a name whose capital belongs
+ * mid-word loses it — "McDonald" prints as "Mcdonald", "DeSouza" as "Desouza".
+ * There is no way to tell those from caps-lock without a list of name prefixes
+ * that would get Malayalam and Arabic-origin names wrong more often than it got
+ * Scottish ones right. Anyone affected can be corrected by hand at the office.
+ */
+export function capitaliseWords(value) {
+  return value
+    .toLowerCase()
+    .replace(/(^|[\s\-'.,])(\p{L})/gu, (_, boundary, letter) => boundary + letter.toUpperCase());
 }
 
-/** "25 September 2026" — spelled out, so it cannot be read as either D/M or M/D. */
-const longDate = (date) =>
-  new Intl.DateTimeFormat("en-GB", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-    timeZone: "Asia/Kolkata",
-  }).format(date);
+/**
+ * Make a string fit its box: shrink it, and cut it if shrinking is not enough.
+ *
+ * Shrinking ALONE is not enough, and quietly assuming it is was a real bug
+ * here. The type can only drop to 7pt before it stops being readable, and a
+ * name long enough to still overflow at 7pt used to be drawn anyway — nothing
+ * clips it, because the artwork's own clipping paths are pushed and popped
+ * inside its own content stream, so text appended afterwards is bounded by
+ * nothing but the page edge. A 45-character name ran out of its white box and
+ * across the blue artwork; at the 120 characters the schema permits it ran off
+ * the page. Now the string is trimmed a character at a time until it and an
+ * ellipsis fit, so the worst case is a visibly shortened name rather than one
+ * painted over the design.
+ *
+ * The budget is the box less the stroke: TextRenderingMode.FillAndOutline lays
+ * the line width across the outline, half of it outside, so the painted glyphs
+ * are wider than widthOfTextAtSize reports.
+ */
+function fit(text, font, maxWidth, startSize, minSize = 7) {
+  const budget = maxWidth - startSize * STROKE_RATIO;
+  const wide = (s, size) => font.widthOfTextAtSize(s, size) > budget;
+
+  let size = startSize;
+  while (size > minSize && wide(text, size)) size -= 0.5;
+  if (!wide(text, size)) return { text, size };
+
+  let cut = text;
+  while (cut.length > 1 && wide(`${cut}…`, size)) cut = cut.slice(0, -1).trimEnd();
+  return { text: `${cut}…`, size };
+}
 
 /**
- * Render the pass. Returns the PDF as a Uint8Array.
+ * Render the pass: the supplied artwork with the three fields filled in.
  *
- * @param {{ registrationId: string, fullName: string, district: string,
- *           pathway: string, issuedAt?: Date }} registration
+ * @param {{ registrationId: string, fullName: string, pathway: string }} registration
+ * @returns {Promise<Uint8Array>}
  */
 export async function buildRegistrationPass(registration) {
-  const doc = await PDFDocument.create();
-  const page = doc.addPage([W, H]);
-  const bold = await doc.embedFont(StandardFonts.HelveticaBold);
-  const body = await doc.embedFont(StandardFonts.Helvetica);
+  const [templateBytes, fontBytes] = await loadAssets();
+
+  const doc = await PDFDocument.load(templateBytes);
+  const page = doc.getPages()[0];
+
+  /* `subset: true` embeds only the glyphs actually drawn — a dozen or so
+     characters rather than the whole 126KB face, on every pass issued. */
+  doc.registerFontkit(fontkit);
+  const font = await doc.embedFont(fontBytes, { subset: true });
 
   const id = sanitise(registration.registrationId);
   doc.setTitle(`Startup E+ registration pass ${id}`);
-  doc.setCreator("Startup E+");
-  doc.setProducer("Startup E+");
 
-  page.drawRectangle({ x: 0, y: 0, width: W, height: H, color: PAPER });
+  /* `value` is already sanitised by the caller. It used to be sanitised again
+     in here, which could eat a character capitaliseWords had just raised: a
+     lowercase letter whose uppercase form falls outside the kept range would be
+     raised and then stripped, so "ȿara" printed as "ara" — a name short of its
+     first letter, with no error anywhere. */
+  const write = (field, text) => {
+    if (!text) return;
+    const { text: fitted, size } = fit(text, font, TEXT_WIDTH, field.size);
 
-  /* ---------- The diagonal photo band ----------
-     pdf-lib has no clipping, so the picture is drawn as a full rectangle and
-     the two wedges outside the parallelogram are painted back in white. That is
-     also why the ticket is drawn on white rather than on a tint: the mask has
-     to be the same colour as whatever it covers. */
-  const photo = await doc.embedJpg(await fs.readFile(path.join(ASSETS, "pass-photo.jpg")));
-  const bandLeft = PHOTO_L_BOTTOM;
-  const bandRight = PHOTO_R_BOTTOM + SLANT;
-  const drawW = bandRight - bandLeft;
-  /* cover: scale to the band's height and let the width overflow into the mask */
-  const drawH = H;
-  const coverW = Math.max(drawW, drawH * PHOTO_RATIO);
-  page.drawImage(photo, {
-    x: bandLeft - (coverW - drawW) / 2,
-    y: 0,
-    width: coverW,
-    height: drawH,
-  });
+    /* Baseline from the box, not from a constant: sit the cap band's middle on
+       the box's middle, whatever size fit() settled on. */
+    const baseline = field.centreY - (size * CAP_RATIO) / 2;
 
-  const wedge = (topX, bottomX, toLeft) =>
-    page.drawSvgPath(
-      toLeft
-        ? `M ${topX} 0 L ${bottomX} ${H} L 0 ${H} L 0 0 Z`
-        : `M ${topX} 0 L ${bottomX} ${H} L ${W} ${H} L ${W} 0 Z`,
-      { x: 0, y: H, color: PAPER },
+    /* Geist ships here as Regular (weight 400) and the artwork's headings are
+       BomstadDisplay-Medium (500), so filled text set plainly reads lighter
+       than the "Name" printed above it. Stroking the glyphs as well as filling
+       them, in the same ink, thickens every stem by the line width and closes
+       that gap — one text object, so the pass still copy-pastes as one clean
+       string, unlike drawing the same string twice at an offset.
+
+       Proportional to the size rather than a fixed 0.15pt: fitSize drops a long
+       name to as little as 7pt, and a fixed stroke there would come out half
+       again as heavy as the same name at 13pt. */
+    page.pushOperators(
+      pushGraphicsState(),
+      setTextRenderingMode(TextRenderingMode.FillAndOutline),
+      setLineWidth(size * STROKE_RATIO),
+      setStrokingColor(INK),
     );
-  wedge(PHOTO_L_BOTTOM + SLANT, PHOTO_L_BOTTOM, true);
-  wedge(PHOTO_R_BOTTOM + SLANT, PHOTO_R_BOTTOM, false);
-
-  /* ---------- Left: who issued it, and what for ---------- */
-  const left = 22;
-  const logo = await doc.embedPng(await fs.readFile(path.join(ASSETS, "pass-logo.png")));
-  const logoW = 104;
-  page.drawImage(logo, {
-    x: left,
-    y: H - 20 - logoW / LOGO_RATIO,
-    width: logoW,
-    height: logoW / LOGO_RATIO,
-  });
-
-  page.drawText("MP Office, Vadakara", { x: left, y: H - 62, size: 7, font: body, color: MUTED });
-
-  page.drawText(sanitise(registration.pathway), {
-    x: left,
-    y: H - 92,
-    size: 17,
-    font: bold,
-    color: INK,
-  });
-  page.drawText("Your registration pathway", {
-    x: left,
-    y: H - 104,
-    size: 6.5,
-    font: body,
-    color: MUTED,
-  });
-
-  page.drawText("District", { x: left, y: 44, size: 7, font: body, color: MUTED });
-  const district = sanitise(registration.district);
-  page.drawText(district, {
-    x: left,
-    y: 22,
-    size: fitSize(district, bold, PHOTO_L_BOTTOM - left - 14, 16, 9),
-    font: bold,
-    color: INK,
-  });
-
-  /* ---------- Right: the panel that gets filled in ---------- */
-  const panelW = W - PANEL_X - 22;
-  const mid = PANEL_X + panelW / 2;
-
-  const heading = "Startup E+";
-  page.drawText(heading, {
-    x: mid - bold.widthOfTextAtSize(heading, 15) / 2,
-    y: H - 38,
-    size: 15,
-    font: bold,
-    color: INK,
-  });
-
-  /* Label, then the value sitting on its rule — the reference's blank lines,
-     filled. The rule stays so a printed pass still reads as a ticket. */
-  const field = (label, value, y, valueColor) => {
-    const labelW = body.widthOfTextAtSize(label, 9);
-    page.drawText(label, { x: PANEL_X, y, size: 9, font: body, color: INK });
-    const vx = PANEL_X + labelW + 5;
-    const vw = W - 22 - vx;
-    page.drawText(value, {
-      x: vx,
-      y: y + 2,
-      size: fitSize(value, bold, vw, 10, 6),
-      font: bold,
-      color: valueColor,
-    });
-    page.drawLine({
-      start: { x: vx, y: y - 3 },
-      end: { x: W - 22, y: y - 3 },
-      thickness: 0.75,
-      color: RULE,
-    });
+    page.drawText(fitted, { x: BOX.left + BOX.padding, y: baseline, size, font, color: INK });
+    page.pushOperators(popGraphicsState());
   };
 
-  field("Name:", sanitise(registration.fullName), H - 74, INK);
-  field("ID:", id, H - 104, BRAND);
-
-  const note = "Quote this ID at the Startup E+ office";
-  page.drawText(note, {
-    x: mid - body.widthOfTextAtSize(note, 6.5) / 2,
-    y: 40,
-    size: 6.5,
-    font: body,
-    color: MUTED,
-  });
-  const issued = `Issued ${longDate(registration.issuedAt ?? new Date())}`;
-  page.drawText(issued, {
-    x: mid - body.widthOfTextAtSize(issued, 6.5) / 2,
-    y: 27,
-    size: 6.5,
-    font: body,
-    color: MUTED,
-  });
-  const caveat = "Not proof of enrolment or selection";
-  page.drawText(caveat, {
-    x: mid - body.widthOfTextAtSize(caveat, 6) / 2,
-    y: 15,
-    size: 6,
-    font: body,
-    color: MUTED,
-  });
+  /* The ID is minted uppercase and the pathway comes from our own data, so only
+     the name — the one value a person types — needs raising. */
+  write(FIELDS.name, capitaliseWords(sanitise(registration.fullName)));
+  write(FIELDS.id, id);
+  write(FIELDS.pathway, sanitise(registration.pathway));
 
   return doc.save();
 }
