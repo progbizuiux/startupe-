@@ -37,7 +37,19 @@ export function Hero() {
                 </span>
               ))}
             </h1>
-            <Link href={hero.cta.href} className={cn(buttonVariants({ size: "md" }), "mt-7")}>
+            {/* Mobile: Join the Grand Launch button navigating to /register */}
+            <Link
+              href="/register"
+              className={cn(buttonVariants({ size: "md" }), "mt-7 inline-flex sm:hidden")}
+            >
+              Join the Grand Launch
+            </Link>
+
+            {/* Desktop: standard hero CTA */}
+            <Link
+              href={hero.cta.href}
+              className={cn(buttonVariants({ size: "md" }), "mt-7 hidden sm:inline-flex")}
+            >
               {hero.cta.label}
             </Link>
           </div>

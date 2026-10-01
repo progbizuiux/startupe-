@@ -3,7 +3,11 @@ import { siteConfig } from "@/config/site";
 import { isCrmConfigured, sendLead } from "@/lib/crm";
 import { createRegistrationId } from "@/lib/registration-id";
 import { buildRegistrationPass } from "@/lib/register-pass";
-import { isRegistrationEmailConfigured, sendRegistrationEmail } from "@/lib/registration-email";
+import {
+  isRegistrationEmailConfigured,
+  registrationEmailTransport,
+  sendRegistrationEmail,
+} from "@/lib/registration-email";
 import { registerStartSchema, occupationDetails } from "@/lib/register-start-schema";
 
 /**
@@ -135,7 +139,7 @@ const mailFor = (data, registrationId, occupation, passBytes) => ({
 function queueRegistrationEmail(registration) {
   if (!isRegistrationEmailConfigured()) {
     console.warn(
-      "[register] MAIL_USER / MAIL_APP_PASSWORD are not set - no confirmation email sent to",
+      "[register] no mail transport configured (set RESEND_API_KEY + MAIL_FROM, or MAIL_USER + MAIL_APP_PASSWORD) - nothing sent to",
       registration.to,
     );
     return;
@@ -144,7 +148,10 @@ function queueRegistrationEmail(registration) {
   after(async () => {
     const mail = await sendRegistrationEmail(registration);
     if (mail.ok) {
-      console.info("[register] confirmation email sent", registration.registrationId);
+      console.info(
+        `[register] confirmation email sent via ${registrationEmailTransport()}`,
+        registration.registrationId,
+      );
     } else {
       console.error(
         "[register] confirmation email failed",

@@ -19,7 +19,7 @@ import {
 import { aspirantSchema, countWords } from "@/lib/register-schema";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Field, controlClasses, describedBy } from "@/components/ui/field";
+import { Field, Select, controlClasses, describedBy } from "@/components/ui/field";
 
 /**
  * Portal 1 ("The Aspirant") registration form.
@@ -136,9 +136,8 @@ export function AspirantForm() {
           </Field>
 
           <Field id="gender" label="Gender" required error={err("gender")}>
-            <select
+            <Select
               id="gender"
-              className={controlClasses}
               aria-invalid={!!err("gender")}
               aria-describedby={describedBy("gender", { error: err("gender") })}
               {...register("gender")}
@@ -149,13 +148,12 @@ export function AspirantForm() {
                   {g}
                 </option>
               ))}
-            </select>
+            </Select>
           </Field>
 
           <Field id="district" label="District" required error={err("district")}>
-            <select
+            <Select
               id="district"
-              className={controlClasses}
               aria-invalid={!!err("district")}
               aria-describedby={describedBy("district", { error: err("district") })}
               {...register("district")}
@@ -166,7 +164,7 @@ export function AspirantForm() {
                   {d}
                 </option>
               ))}
-            </select>
+            </Select>
           </Field>
 
           <Field
@@ -209,9 +207,8 @@ export function AspirantForm() {
 
         <div className="grid gap-6 sm:grid-cols-2">
           <Field id="academicStatus" label="Current status" required error={err("academicStatus")}>
-            <select
+            <Select
               id="academicStatus"
-              className={controlClasses}
               aria-invalid={!!err("academicStatus")}
               aria-describedby={describedBy("academicStatus", { error: err("academicStatus") })}
               {...register("academicStatus")}
@@ -222,7 +219,7 @@ export function AspirantForm() {
                   {s}
                 </option>
               ))}
-            </select>
+            </Select>
           </Field>
 
           <Field
@@ -303,9 +300,8 @@ export function AspirantForm() {
 
         <div className="grid gap-6 sm:grid-cols-2">
           <Field id="sector" label="Sector interest" required error={err("sector")}>
-            <select
+            <Select
               id="sector"
-              className={controlClasses}
               aria-invalid={!!err("sector")}
               aria-describedby={describedBy("sector", { error: err("sector") })}
               {...register("sector")}
@@ -316,7 +312,7 @@ export function AspirantForm() {
                   {s}
                 </option>
               ))}
-            </select>
+            </Select>
           </Field>
 
           <Field
@@ -325,9 +321,8 @@ export function AspirantForm() {
             required
             error={err("primaryNeed")}
           >
-            <select
+            <Select
               id="primaryNeed"
-              className={controlClasses}
               aria-invalid={!!err("primaryNeed")}
               aria-describedby={describedBy("primaryNeed", { error: err("primaryNeed") })}
               {...register("primaryNeed")}
@@ -338,7 +333,7 @@ export function AspirantForm() {
                   {n}
                 </option>
               ))}
-            </select>
+            </Select>
           </Field>
         </div>
       </fieldset>

@@ -55,10 +55,22 @@
     outline-offset: 2px;
   }
 
+  /* Scrim behind a modal <dialog>. The colour is written out rather than
+     referenced as var(--ink-950): ::backdrop is not a child of the dialog and
+     has historically inherited nothing, so a custom property resolves to
+     invalid-at-computed-value-time and the scrim silently falls back to
+     transparent. #111 is --ink-950. */
+  dialog::backdrop {
+    background-color: rgb(17 17 17 / 0.6);
+    animation: fade-in var(--duration-normal) ease-out both;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     *,
     ::before,
-    ::after {
+    ::after,
+    /* ::backdrop is not matched by `*`, so the scrim would keep its fade. */
+    ::backdrop {
       animation-duration: 0.01ms !important;
       animation-iteration-count: 1 !important;
       transition-duration: 0.01ms !important;

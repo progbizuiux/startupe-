@@ -18,7 +18,7 @@ export const footer = {
         { label: "About", href: "/about" },
         { label: "Contact", href: "/contact" },
         { label: "Register", href: "/register" },
-        { label: "Process", href: "/#message" }, // point at the "How it works" section once it exists
+        { label: "Process", href: "/#join" },
         // { label: "Faq", href: "/#faq" },
       ],
     },

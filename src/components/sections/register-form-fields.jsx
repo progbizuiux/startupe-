@@ -13,6 +13,8 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Field, Select, controlClasses, describedBy } from "@/components/ui/field";
 
 /**
+
+/**
  * The registration form, and the hand-off that replaces it on success.
  *
  * Validation lives in src/lib/register-start-schema.js and is shared with the
@@ -25,8 +27,23 @@ import { Field, Select, controlClasses, describedBy } from "@/components/ui/fiel
  * asked. Inline, the only pass that exists is the one issued to the person who
  * just filled the form.
  */
-export function RegisterFormFields({ districts, occupations, labels, legends, success }) {
-  const [result, setResult] = useState(null);
+export function RegisterFormFields({ districts, occupations, labels, legends, success, privacy, header, preview }) {
+  const [result, setResult] = useState(() => {
+    /* Dev-only: if the parent passes `preview`, seed the state with mock data
+       so the success panel renders immediately without a real submission.
+       Activated via ?preview=success on the register page. */
+    if (preview) {
+      return {
+        registrationId: "SE-2026-XXXX",
+        pathway: "The Aspirant",
+        next: "/register/aspirant",
+        passUrl: "#",
+        fullName: "Preview User",
+        district: "Ernakulam",
+      };
+    }
+    return null;
+  });
 
   /* The panel replaces the form, so the submit button unmounts and focus would
      otherwise fall to <body> while the toast is transient. */
@@ -125,45 +142,106 @@ export function RegisterFormFields({ districts, occupations, labels, legends, su
         ref={doneRef}
         tabIndex={-1}
         role="status"
-        className="rounded-card border border-border bg-background p-6 sm:p-8"
+        className="relative overflow-hidden rounded-[1.5rem] bg-white border border-ink-200 text-ink-950 shadow-[0_20px_50px_-15px_rgba(0,0,0,0.08)] motion-reduce:animate-none"
+        style={{ animation: "success-scale-in 600ms cubic-bezier(0.16, 1, 0.3, 1) both" }}
       >
-        <h2 className="text-h5">{success.heading}</h2>
-        <p className="mt-3 max-w-[52ch] text-muted-foreground">{success.body}</p>
+        <h1 className="sr-only">Registration Successful</h1>
+        {/* Top ambient soft green glow */}
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-44 bg-gradient-to-b from-emerald-50/70 to-transparent" aria-hidden="true" />
 
-        <div className="mt-6 rounded-card bg-muted px-5 py-4">
-          <span className="eyebrow block text-caption text-muted-foreground">
-            {success.idLabel}
-          </span>
-          <span className="mt-1 block font-heading text-h4 font-medium tracking-[0.1em] tabular-nums select-all">
-            {result.registrationId}
-          </span>
+        {/* Top section — checkmark + heading */}
+        <div className="relative px-8 pt-10 pb-8 sm:px-12 sm:pt-12 sm:pb-10 text-center">
+          {/* Animated success icon */}
+          <div
+            className="relative mx-auto mb-6 flex size-16 items-center justify-center rounded-full bg-emerald-50 ring-8 ring-emerald-50/60 border border-emerald-200/80 motion-reduce:animate-none"
+            style={{ animation: "success-ring 500ms cubic-bezier(0.16, 1, 0.3, 1) 200ms both" }}
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              className="size-8 text-emerald-600 motion-reduce:animate-none"
+              aria-hidden="true"
+            >
+              <path
+                d="M5 13l4 4L19 7"
+                stroke="currentColor"
+                strokeWidth={2.75}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                style={{
+                  strokeDasharray: 24,
+                  strokeDashoffset: 0,
+                  animation: "success-check 400ms cubic-bezier(0.16, 1, 0.3, 1) 400ms both",
+                }}
+              />
+            </svg>
+          </div>
+
+          {/* Heading - Green text */}
+          <h2
+            className="font-heading text-h3 font-bold text-emerald-600 motion-reduce:animate-none"
+            style={{ animation: "success-scale-in 500ms cubic-bezier(0.16, 1, 0.3, 1) 400ms both" }}
+          >
+            {success.heading}
+          </h2>
+          <p
+            className="mx-auto mt-3 max-w-[46ch] text-[0.95rem] leading-relaxed text-ink-600 motion-reduce:animate-none"
+            style={{ animation: "success-scale-in 500ms cubic-bezier(0.16, 1, 0.3, 1) 500ms both" }}
+          >
+            {success.body}
+          </p>
         </div>
 
-        {/* No preview of the pass on screen. It used to be drawn in HTML beside
-            the download, which only worked while this file also drew the PDF —
-            now the document is fixed artwork, an HTML lookalike would be a
-            second design claiming to be the first, and the two would drift the
-            moment the artwork is replaced. The file itself is one tap away. */}
+        {/* Ticket perforated divider */}
+        <div
+          className="relative flex items-center motion-reduce:animate-none"
+          style={{ animation: "success-scale-in 500ms cubic-bezier(0.16, 1, 0.3, 1) 550ms both" }}
+          aria-hidden="true"
+        >
+          {/* Left notch */}
+          <div className="relative -left-3 size-6 shrink-0 rounded-full bg-background border border-ink-200" />
+          {/* Dashed line */}
+          <div className="flex-1 border-t-2 border-dashed border-ink-200" />
+          {/* Right notch */}
+          <div className="relative -right-3 size-6 shrink-0 rounded-full bg-background border border-ink-200" />
+        </div>
 
-        <div className="mt-6 flex flex-wrap gap-4">
-          {/* A plain anchor, not a button with a click handler: `download` on a
-              blob URL is what the browser already knows how to do, and it keeps
-              working with JavaScript mid-flight or a middle-click. */}
-          <a
-            href={result.passUrl}
-            download={`startup-e-plus-pass-${result.registrationId}.pdf`}
-            className={cn(buttonVariants({ size: "md" }), "w-full sm:w-auto")}
-          >
-            <Download aria-hidden="true" className="size-4" strokeWidth={2} />
-            {success.download}
-          </a>
-          <Link
-            href={result.next}
-            className={cn(buttonVariants({ variant: "outline", size: "md" }), "w-full sm:w-auto")}
-          >
-            {success.nextLabel}: {result.pathway}
-            <ArrowRight aria-hidden="true" className="size-4" strokeWidth={2} />
-          </Link>
+        {/* Bottom section — ID + actions */}
+        <div
+          className="relative bg-ink-50/50 px-8 pt-8 pb-10 sm:px-12 sm:pt-10 sm:pb-12 motion-reduce:animate-none"
+          style={{ animation: "success-scale-in 500ms cubic-bezier(0.16, 1, 0.3, 1) 600ms both" }}
+        >
+          {/* Registration ID */}
+          <div className="text-center">
+            <span className="eyebrow block text-[0.75rem] font-semibold uppercase tracking-[0.2em] text-ink-500">
+              {success.idLabel}
+            </span>
+            <span
+              className="mt-2 block font-heading text-[clamp(1.75rem,1.2rem+2.2vw,2.75rem)] font-extrabold tracking-[0.14em] text-ink-950 tabular-nums select-all"
+            >
+              {result.registrationId}
+            </span>
+          </div>
+
+          {/* Action buttons */}
+          <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+            <a
+              href={result.passUrl}
+              download={`startup-e-plus-pass-${result.registrationId}.pdf`}
+              className="inline-flex h-12 w-full items-center justify-center gap-2.5 rounded-button bg-emerald-600 px-7 text-[0.92rem] font-semibold text-white shadow-md shadow-emerald-600/20 transition-all hover:bg-emerald-700 hover:shadow-lg sm:w-auto"
+            >
+              <Download aria-hidden="true" className="size-[1.1rem]" strokeWidth={2.2} />
+              {success.download}
+            </a>
+
+            <Link
+              href={result.next}
+              className="inline-flex h-12 w-full items-center justify-center gap-2.5 rounded-button border border-ink-300 bg-white px-7 text-[0.92rem] font-medium text-ink-800 transition-all hover:border-ink-400 hover:bg-ink-100/70 sm:w-auto"
+            >
+              {success.nextLabel}: {result.pathway}
+              <ArrowRight aria-hidden="true" className="size-[1.1rem]" strokeWidth={2.2} />
+            </Link>
+          </div>
         </div>
       </div>
     );
@@ -172,7 +250,43 @@ export function RegisterFormFields({ districts, occupations, labels, legends, su
   const err = (name) => errors[name]?.message;
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} noValidate className="flex flex-col gap-8">
+    <>
+      {header && (
+        <div className="mb-[clamp(2rem,3.5vw,3rem)]">
+          <span
+            style={{ animationDelay: "0ms" }}
+            className="eyebrow animate-fade-up text-muted-foreground motion-reduce:animate-none"
+          >
+            {header.eyebrow}
+          </span>
+
+          <h1
+            style={{ animationDelay: "50ms" }}
+            className="mt-4 animate-fade-up text-[clamp(2rem,1.4rem+2.4vw,3.25rem)] leading-[1.14] motion-reduce:animate-none"
+          >
+            {header.titleLines.map((line, i) => (
+              <span key={line} className="block">
+                {line}
+                {i === header.titleLines.length - 1 && (
+                  <>
+                    {" "}
+                    <span className="text-gradient">{header.titleHighlight}</span>
+                  </>
+                )}
+              </span>
+            ))}
+          </h1>
+
+          <p
+            style={{ animationDelay: "120ms" }}
+            className="mt-5 max-w-[52ch] animate-fade-up text-lead text-muted-foreground motion-reduce:animate-none"
+          >
+            {header.description}
+          </p>
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit(onSubmit)} noValidate className="flex flex-col gap-8">
       {/* ---------- About you ---------- */}
       <fieldset className="flex flex-col gap-6">
         <legend className="mb-4 eyebrow text-muted-foreground">{legends.you}</legend>
@@ -342,6 +456,11 @@ export function RegisterFormFields({ districts, occupations, labels, legends, su
       >
         {isSubmitting ? labels.submitting : labels.submit}
       </Button>
+
+      {privacy && (
+        <p className="mt-6 max-w-[62ch] text-caption text-muted-foreground">{privacy}</p>
+      )}
     </form>
+    </>
   );
 }

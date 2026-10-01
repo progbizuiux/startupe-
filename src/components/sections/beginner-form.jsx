@@ -17,7 +17,7 @@ import {
 import { beginnerSchema } from "@/lib/register-schema";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Field, controlClasses, describedBy } from "@/components/ui/field";
+import { Field, Select, controlClasses, describedBy } from "@/components/ui/field";
 
 const emptyFounder = { name: "", email: "", phone: "", background: "" };
 
@@ -84,8 +84,8 @@ export function BeginnerForm() {
         <CircleCheckBig aria-hidden="true" className="size-9 text-primary" />
         <h2 className="mt-4 text-h5">Registration received</h2>
         <p className="mt-3 text-muted-foreground">
-          Thanks for registering. The Startup E+ team will follow up on mentoring, compliance support
-          and the KSUM seed capital routes open to you.
+          Thanks for registering. The Startup E+ team will follow up on mentoring, compliance
+          support and the KSUM seed capital routes open to you.
         </p>
       </div>
     );
@@ -224,9 +224,8 @@ export function BeginnerForm() {
             required
             error={err("registrationType")}
           >
-            <select
+            <Select
               id="registrationType"
-              className={controlClasses}
               aria-invalid={!!err("registrationType")}
               aria-describedby={describedBy("registrationType", { error: err("registrationType") })}
               {...register("registrationType")}
@@ -237,7 +236,7 @@ export function BeginnerForm() {
                   {t}
                 </option>
               ))}
-            </select>
+            </Select>
           </Field>
 
           <Field
@@ -287,9 +286,8 @@ export function BeginnerForm() {
 
         <div className="grid gap-6 sm:grid-cols-2">
           <Field id="currentStage" label="Current stage" required error={err("currentStage")}>
-            <select
+            <Select
               id="currentStage"
-              className={controlClasses}
               aria-invalid={!!err("currentStage")}
               aria-describedby={describedBy("currentStage", { error: err("currentStage") })}
               {...register("currentStage")}
@@ -300,7 +298,7 @@ export function BeginnerForm() {
                   {s}
                 </option>
               ))}
-            </select>
+            </Select>
           </Field>
 
           <Field
@@ -309,9 +307,8 @@ export function BeginnerForm() {
             required
             error={err("operationalHurdle")}
           >
-            <select
+            <Select
               id="operationalHurdle"
-              className={controlClasses}
               aria-invalid={!!err("operationalHurdle")}
               aria-describedby={describedBy("operationalHurdle", {
                 error: err("operationalHurdle"),
@@ -324,7 +321,7 @@ export function BeginnerForm() {
                   {h}
                 </option>
               ))}
-            </select>
+            </Select>
           </Field>
         </div>
 

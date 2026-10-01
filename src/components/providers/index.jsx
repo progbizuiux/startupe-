@@ -2,6 +2,7 @@
 
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "sonner";
+import { ProgramModal } from "@/components/sections/program-modal";
 import { QueryProvider } from "./query-provider";
 import { SmoothScroll } from "./smooth-scroll";
 
@@ -17,6 +18,8 @@ export function Providers({ children }) {
       <QueryProvider>
         <SmoothScroll />
         {children}
+        {/* Greets a visitor once per session; see src/data/announcement.js. */}
+        <ProgramModal />
         <Toaster position="bottom-right" richColors closeButton />
       </QueryProvider>
     </ThemeProvider>

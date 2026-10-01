@@ -25,6 +25,7 @@ export const metadata = {
  * people into the two portals, which is exactly what this page's own success
  * panel does with the pathway the person just chose.
  */
-export default function RegisterPage() {
-  return <RegisterForm />;
+export default async function RegisterPage({ searchParams }) {
+  const params = await searchParams;
+  return <RegisterForm preview={params?.preview === "success"} />;
 }

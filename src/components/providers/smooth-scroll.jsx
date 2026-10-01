@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import Lenis from "lenis";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { lenisRef } from "@/lib/scroll-lock";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -44,6 +45,11 @@ export function SmoothScroll() {
       },
     });
 
+    /* Published so a modal dialog can suspend scrolling behind itself. Written
+       here rather than at module scope so StrictMode's second run replaces a
+       destroyed instance instead of leaving a stale one. */
+    lenisRef.current = lenis;
+
     const onScroll = () => ScrollTrigger.update();
     lenis.on("scroll", onScroll);
 
@@ -63,6 +69,7 @@ export function SmoothScroll() {
       lenis.off("scroll", onScroll);
       gsap.ticker.remove(raf);
       gsap.ticker.lagSmoothing(500, 33); // back to GSAP's default
+      lenisRef.current = null;
       lenis.destroy();
     };
   }, []);

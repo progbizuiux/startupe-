@@ -17,7 +17,7 @@ export const hero = {
   description:
     "A connected ecosystem helping Kerala’s entrepreneurs and businesses turn ideas into opportunities, growth, and impact",
 
-  cta: { label: "See how it works", href: "#message" }, // point at the "How it works" section once it exists
+  cta: { label: "See how it works", href: "#join" },
 
   stat: {
     value: "20+",

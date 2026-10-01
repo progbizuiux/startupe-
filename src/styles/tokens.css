@@ -391,6 +391,13 @@
   /* logo strip on phones; the list must be duplicated so -50% lands seamlessly */
   --animate-marquee: marquee 20s linear infinite;
 
+  /* Success celebration animations */
+  --animate-success-ring: success-ring 600ms var(--easing-out-expo) both;
+  --animate-success-check: success-check 400ms var(--easing-out-expo) 300ms both;
+  --animate-success-scale-in: success-scale-in 500ms var(--easing-out-expo) both;
+  --animate-success-shimmer: success-shimmer 2s ease-in-out infinite;
+  --animate-confetti: confetti-burst 800ms var(--easing-out-expo) both;
+
   @keyframes marquee {
     to {
       transform: translateX(-50%);
@@ -413,6 +420,62 @@
     }
     to {
       opacity: 1;
+    }
+  }
+
+  /* Success ring scales up and fades in */
+  @keyframes success-ring {
+    from {
+      opacity: 0;
+      transform: scale(0.5);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  /* Checkmark draws itself */
+  @keyframes success-check {
+    from {
+      stroke-dashoffset: 24;
+    }
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  /* Elements scale in with a bounce feel */
+  @keyframes success-scale-in {
+    0% {
+      opacity: 0;
+      transform: translateY(16px) scale(0.95);
+    }
+    100% {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  /* Shimmer sweep for the ID card */
+  @keyframes success-shimmer {
+    0%, 100% {
+      background-position: -200% center;
+    }
+    50% {
+      background-position: 200% center;
+    }
+  }
+
+  /* Confetti particles burst outward */
+  @keyframes confetti-burst {
+    from {
+      opacity: 1;
+      transform: translate(var(--cx, 0), var(--cy, 0)) scale(1) rotate(0deg);
+    }
+    to {
+      opacity: 0;
+      transform: translate(var(--tx, 0), var(--ty, 0)) scale(0.4) rotate(var(--tr, 180deg));
     }
   }
 }

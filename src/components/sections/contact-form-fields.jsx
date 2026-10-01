@@ -9,7 +9,7 @@ import { siteConfig } from "@/config/site";
 import { contactSchema } from "@/lib/contact-schema";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Field, controlClasses, describedBy } from "@/components/ui/field";
+import { Field, Select, controlClasses, describedBy } from "@/components/ui/field";
 
 /** Reply choices that need a number, matching the superRefine in the schema. */
 const NEEDS_PHONE = ["Phone call", "WhatsApp"];
@@ -182,9 +182,8 @@ export function ContactFormFields({ topics, channels, labels, success }) {
 
         <div className="grid gap-6 sm:grid-cols-2">
           <Field id="topic" label={labels.topic} required error={err("topic")}>
-            <select
+            <Select
               id="topic"
-              className={controlClasses}
               aria-invalid={!!err("topic")}
               aria-describedby={describedBy("topic", { error: err("topic") })}
               {...register("topic")}
@@ -195,7 +194,7 @@ export function ContactFormFields({ topics, channels, labels, success }) {
                   {topic}
                 </option>
               ))}
-            </select>
+            </Select>
           </Field>
 
           <Field
@@ -204,9 +203,8 @@ export function ContactFormFields({ topics, channels, labels, success }) {
             required
             error={err("preferredReply")}
           >
-            <select
+            <Select
               id="preferredReply"
-              className={controlClasses}
               aria-invalid={!!err("preferredReply")}
               aria-describedby={describedBy("preferredReply", { error: err("preferredReply") })}
               {...register("preferredReply")}
@@ -217,7 +215,7 @@ export function ContactFormFields({ topics, channels, labels, success }) {
                   {channel}
                 </option>
               ))}
-            </select>
+            </Select>
           </Field>
 
           <Field

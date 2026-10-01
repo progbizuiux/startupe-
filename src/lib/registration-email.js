@@ -35,8 +35,36 @@ import { siteConfig } from "@/config/site";
 
 const TIMEOUT_MS = 10_000;
 
-/** Read at call time, not module load, so a restart is all it takes to change. */
+/**
+ * Which way the mail goes out, read at call time so a restart is all it takes.
+ *
+ * Two transports, and Resend wins when it is configured. That is not
+ * indecision, it is a migration: Gmail works today and keeps working until the
+ * domain is ready, and the day RESEND_API_KEY and MAIL_FROM appear the same
+ * code starts sending from startupeplus.com instead. Nothing has to be
+ * switched over by hand and there is no window where registrations get no mail.
+ *
+ * Why the move is worth making: mail sent from a free @gmail.com account, with
+ * a 1.8MB PDF attached, to someone who has never corresponded with it, is the
+ * exact shape of a phishing message, and Gmail files a large share of it as
+ * spam. That is not a bug to tune away — it is what a consumer account with no
+ * sending reputation looks like to a filter. A domain with SPF, DKIM and DMARC
+ * behind a transactional provider is what makes the same message land.
+ */
 function config() {
+  /* --- preferred: a real domain through Resend --- */
+  const apiKey = process.env.RESEND_API_KEY?.trim();
+  const from = process.env.MAIL_FROM?.trim();
+  if (apiKey && from) {
+    return {
+      kind: "resend",
+      apiKey,
+      from,
+      replyTo: process.env.MAIL_REPLY_TO?.trim() || siteConfig.contact?.email,
+    };
+  }
+
+  /* --- fallback: the office Gmail over SMTP --- */
   const user = process.env.MAIL_USER?.trim();
 
   /* Whitespace stripped, not trimmed. Google shows an App Password as four
@@ -53,14 +81,18 @@ function config() {
   if (!user || !pass) return null;
 
   return {
+    kind: "gmail",
     user,
     pass,
     /* Gmail rewrites From to the authenticated account anyway, so MAIL_FROM is
        only useful for the display name in front of it. */
-    from: process.env.MAIL_FROM || `${siteConfig.name} <${user}>`,
-    replyTo: process.env.MAIL_REPLY_TO || user,
+    from: from || `${siteConfig.name} <${user}>`,
+    replyTo: process.env.MAIL_REPLY_TO?.trim() || user,
   };
 }
+
+/** Which transport is live, for the log line the route writes. */
+export const registrationEmailTransport = () => config()?.kind ?? null;
 
 export const isRegistrationEmailConfigured = () => config() !== null;
 
@@ -144,14 +176,69 @@ function body({ fullName, registrationId, pathway, portal, nextUrl }) {
 }
 
 /**
- * The one provider-shaped function. Replace this to move to another provider.
+ * Resend's REST API. One POST, no SMTP conversation, no dependency beyond
+ * fetch - the same shape src/lib/crm.js uses to reach the CRM.
+ *
+ * The attachment goes as base64 here, unlike the SMTP path where nodemailer
+ * does that encoding itself from raw bytes. Sending base64 down both would
+ * deliver a base64 string OF a base64 string and an unopenable PDF.
+ */
+async function deliverViaResend(settings, message) {
+  let response;
+  try {
+    response = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${settings.apiKey}`,
+      },
+      body: JSON.stringify({
+        from: message.from,
+        to: [message.to],
+        ...(message.replyTo ? { reply_to: message.replyTo } : {}),
+        subject: message.subject,
+        text: message.text,
+        html: message.html,
+        attachments: message.attachments.map((a) => ({
+          filename: a.filename,
+          content: a.content.toString("base64"),
+        })),
+      }),
+      signal: AbortSignal.timeout(TIMEOUT_MS),
+    });
+  } catch (error) {
+    return {
+      ok: false,
+      error: error.name === "TimeoutError" ? "Resend timed out" : String(error),
+    };
+  }
+
+  if (!response.ok) {
+    const detail = await response.text().catch(() => "");
+    const hint =
+      response.status === 403
+        ? "Resend refused the From address - the domain in MAIL_FROM must be verified in the Resend dashboard"
+        : response.status === 401
+          ? "Resend rejected RESEND_API_KEY"
+          : null;
+    return {
+      ok: false,
+      status: response.status,
+      error: hint ? `${hint}: ${detail.slice(0, 300)}` : detail.slice(0, 400),
+    };
+  }
+  return { ok: true };
+}
+
+/**
+ * Gmail over SMTP, the fallback while the domain is being set up.
  *
  * A fresh transport per send rather than one held in module scope: this runs
  * from `after()` on a platform that may freeze the process between requests, so
  * a pooled connection would as often as not be a dead socket by the next one.
  * One registration is one connection, opened and closed.
  */
-async function deliver(settings, message) {
+async function deliverViaGmail(settings, message) {
   const transport = nodemailer.createTransport({
     service: "gmail",
     auth: { user: settings.user, pass: settings.pass },
@@ -196,6 +283,7 @@ export async function sendRegistrationEmail(registration) {
   if (!settings) return { ok: false, error: "Registration email is not configured" };
 
   const { text, html } = body(registration);
+  const deliver = settings.kind === "resend" ? deliverViaResend : deliverViaGmail;
 
   return deliver(settings, {
     from: settings.from,
