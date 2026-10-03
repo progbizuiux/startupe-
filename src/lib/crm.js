@@ -89,6 +89,23 @@ const compact = (object) =>
    executive, so these strings are part of the integration - changing one means
    changing the assignment rule on the CRM side too. Plain ASCII: they are
    matched against rules typed into the CRM, where an em dash invites a mismatch. */
+/*
+ * Which event the enquiry came in for.
+ *
+ * Every registration the site takes today is for the Grand Launch, and the CRM
+ * cannot tell that from the lead alone - the form name says which FORM was
+ * filled, not what it was filled FOR. A second event will eventually share
+ * these forms, and leads filed before this line existed will be the ones with
+ * no Event at all, so the marker is worth carrying now rather than being
+ * reconstructed from timestamps later.
+ *
+ * Written here rather than taken from the form: the person registering is not
+ * asked which event they mean, and never should be. Plain ASCII and the exact
+ * wording the site uses ("Join the Grand Launch"), because this is matched
+ * against rules typed into the CRM by hand.
+ */
+const ENQUIRY_EVENT = "Grand Launch";
+
 const FORM_NAME = {
   aspirant: "Startup E+ - The Aspirant",
   beginner: "Startup E+ - The Beginner",
@@ -232,7 +249,9 @@ function fromContact(data) {
  * therefore the FIRST line of the description as well as a custom field -
  * CRM_ADDITIONAL_DATA=off drops the custom-field map wholesale, and an ID that
  * lived only there would vanish during exactly the outage that hatch exists
- * for.
+ * for. The same reasoning puts ENQUIRY_EVENT in both places, one line below it:
+ * it is what tells the office WHICH event a lead belongs to, and it is no use if
+ * the one hatch that exists for a bad day is what drops it.
  *
  * state is hardcoded to Kerala here, unlike fromContact: the form only offers
  * Kerala districts, so it cannot be wrong.
@@ -254,6 +273,7 @@ function fromRegisterStart(data) {
     country: "India",
     description: lines([
       ["Registration ID", data.registrationId],
+      ["Event", ENQUIRY_EVENT],
       ["Portal", "Registration"],
       ["Occupation", data.occupationLabel ?? data.occupation],
       ["Pathway", data.pathway],
@@ -266,6 +286,7 @@ function fromRegisterStart(data) {
     ]),
     additionalData: compact({
       RegistrationID: data.registrationId,
+      Event: ENQUIRY_EVENT,
       Portal: "Registration",
       Occupation: data.occupationLabel ?? data.occupation,
       Pathway: data.pathway,

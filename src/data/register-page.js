@@ -72,10 +72,13 @@ export const registerPage = {
     },
     success: {
       heading: "You're registered",
-      body: "Your registration is recorded with the Startup E+ office. Save your pass now — it is issued once and this page cannot generate it again.",
+      body: "Recorded with the Startup E+ office. Save your pass now: it is issued once, and this page cannot make another.",
       idLabel: "Your registration ID",
+      idHint: "Quote this when you contact the office.",
+      pathwayLabel: "Registered as",
       download: "Download your pass",
       nextLabel: "Your next step",
+      nextCta: "Continue to the application",
     },
   },
 };
