@@ -86,17 +86,17 @@ Body cap 8 KB · rate limit **4 per 10 minutes** · `maxDuration` 30s.
 }
 ```
 
-| Field | Required | Rules |
-|---|---|---|
-| `fullName` | yes | 2–120 chars after collapsing whitespace. Any alphabet — Malayalam included. Newlines and control characters are folded to spaces before the length check, so a name cannot forge an extra labelled line in the CRM record. |
-| `age` | yes | Integer 14–99. Sent as a string or a number; `""` reads as missing. |
-| `occupation` | yes | `"student"` \| `"entrepreneur"` \| `"business"` |
-| `email` | yes | Valid email. The confirmation is sent here. |
-| `phone` | yes | 10-digit Indian mobile starting 6–9. Spaces, dashes and brackets are stripped first, and an optional `+91` / `91` / `0` prefix is allowed — so `98765 43210`, `+91 98765 43210` and `09876543210` are all accepted. |
-| `altPhone` | no | Same rule, or `""`. |
-| `address` | yes | 6–240 chars after collapsing whitespace. Newlines are folded to spaces. |
-| `district` | yes | One of the 14 Kerala districts (see below). |
-| `website` | no | Honeypot — must be empty or absent. |
+| Field        | Required | Rules                                                                                                                                                                                                                      |
+| ------------ | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `fullName`   | yes      | 2–120 chars after collapsing whitespace. Any alphabet — Malayalam included. Newlines and control characters are folded to spaces before the length check, so a name cannot forge an extra labelled line in the CRM record. |
+| `age`        | yes      | Integer 14–99. Sent as a string or a number; `""` reads as missing.                                                                                                                                                        |
+| `occupation` | yes      | `"student"` \| `"entrepreneur"` \| `"business"`                                                                                                                                                                            |
+| `email`      | yes      | Valid email. The confirmation is sent here.                                                                                                                                                                                |
+| `phone`      | yes      | 10-digit Indian mobile starting 6–9. Spaces, dashes and brackets are stripped first, and an optional `+91` / `91` / `0` prefix is allowed — so `98765 43210`, `+91 98765 43210` and `09876543210` are all accepted.        |
+| `altPhone`   | no       | Same rule, or `""`.                                                                                                                                                                                                        |
+| `address`    | yes      | 6–240 chars after collapsing whitespace. Newlines are folded to spaces.                                                                                                                                                    |
+| `district`   | yes      | One of the 14 Kerala districts (see below).                                                                                                                                                                                |
+| `website`    | no       | Honeypot — must be empty or absent.                                                                                                                                                                                        |
 
 `occupation` decides the follow-on portal: `student` → The Aspirant
 (`/register/aspirant`); `entrepreneur` and `business` → The Beginner
@@ -128,15 +128,15 @@ can be rejected without a lookup.
 
 ### Response — failures
 
-| Status | Body | When |
-|---|---|---|
-| `400` | `{"ok":false,"error":"Malformed request body"}` | not JSON |
-| `403` | `{"ok":false,"error":"Bad origin"}` | cross-origin |
-| `413` | `{"ok":false,"error":"Request too large"}` | body over 8 KB |
-| `422` | `{"ok":false,"errors":{…}}` | validation |
-| `429` | `{"ok":false,"error":"Too many registrations from here. Please try again later."}` | over 4 in 10 min |
-| `500` | `{"ok":false,"error":"Registrations are not being accepted right now"}` | CRM env vars missing in production |
-| `502` | `{"ok":false,"error":"Could not complete your registration. Please try again."}` | CRM rejected or timed out. **No ID is returned** — handing one back for a registration that was not recorded would be a reference to something that did not happen. A retry mints a fresh ID. |
+| Status | Body                                                                               | When                                                                                                                                                                                          |
+| ------ | ---------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `400`  | `{"ok":false,"error":"Malformed request body"}`                                    | not JSON                                                                                                                                                                                      |
+| `403`  | `{"ok":false,"error":"Bad origin"}`                                                | cross-origin                                                                                                                                                                                  |
+| `413`  | `{"ok":false,"error":"Request too large"}`                                         | body over 8 KB                                                                                                                                                                                |
+| `422`  | `{"ok":false,"errors":{…}}`                                                        | validation                                                                                                                                                                                    |
+| `429`  | `{"ok":false,"error":"Too many registrations from here. Please try again later."}` | over 4 in 10 min                                                                                                                                                                              |
+| `500`  | `{"ok":false,"error":"Registrations are not being accepted right now"}`            | CRM env vars missing in production                                                                                                                                                            |
+| `502`  | `{"ok":false,"error":"Could not complete your registration. Please try again."}`   | CRM rejected or timed out. **No ID is returned** — handing one back for a registration that was not recorded would be a reference to something that did not happen. A retry mints a fresh ID. |
 
 A honeypot hit returns `201` with no ID:
 `{"ok":true,"registrationId":null}`.
@@ -266,16 +266,16 @@ Body cap 16 KB · rate limit **5 per 10 minutes**.
 }
 ```
 
-| Field | Required | Rules |
-|---|---|---|
-| `fullName` | yes | 2–120 |
-| `email` | yes | valid email |
-| `phone` | conditional | **Required** when `preferredReply` is `"Phone call"` or `"WhatsApp"`; otherwise optional. 10-digit Indian mobile, or `""`. |
-| `topic` | yes | one of the topics below |
-| `organisation` | no | ≤160, or `""` |
-| `preferredReply` | yes | `"Email"` \| `"Phone call"` \| `"WhatsApp"` — WhatsApp is only offered while `siteConfig.contact.whatsapp` is set |
-| `message` | yes | 20–1200 |
-| `website` | no | honeypot |
+| Field            | Required    | Rules                                                                                                                      |
+| ---------------- | ----------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `fullName`       | yes         | 2–120                                                                                                                      |
+| `email`          | yes         | valid email                                                                                                                |
+| `phone`          | conditional | **Required** when `preferredReply` is `"Phone call"` or `"WhatsApp"`; otherwise optional. 10-digit Indian mobile, or `""`. |
+| `topic`          | yes         | one of the topics below                                                                                                    |
+| `organisation`   | no          | ≤160, or `""`                                                                                                              |
+| `preferredReply` | yes         | `"Email"` \| `"Phone call"` \| `"WhatsApp"` — WhatsApp is only offered while `siteConfig.contact.whatsapp` is set          |
+| `message`        | yes         | 20–1200                                                                                                                    |
+| `website`        | no          | honeypot                                                                                                                   |
 
 ### Response
 
@@ -308,8 +308,8 @@ Thiruvananthapuram, Thrissur, Wayanad.
 **Genders** — Female, Male, Other, Prefer not to say.
 
 **Academic statuses** — School student, College student, Recent graduate,
-Working professional, Not currently studying. *(The first two make `institution`
-required.)*
+Working professional, Not currently studying. _(The first two make `institution`
+required.)_
 
 **Sectors** — Agriculture / Food Processing, Deep Tech / Software, Retail /
 Ecommerce, Healthcare, Creative / Media, Traditional Crafts.
@@ -342,34 +342,34 @@ arrays — so adding an option is a one-line change in one file.
 
 Every submission is mapped to a Progbiz CRM lead and POSTed to
 `CRM_LEADS_URL`, authenticated with `X-API-Key`. The CRM processes leads
-asynchronously, so a `200` from it means *accepted*, not *assigned* — there is
+asynchronously, so a `200` from it means _accepted_, not _assigned_ — there is
 nothing to read back.
 
 `formName` routes the lead to an executive on the CRM side, so these strings are
 part of the integration; changing one means changing the assignment rule too:
 
-| Route | `formName` |
-|---|---|
-| `/api/register/start` | `Startup E+ - Registration` |
+| Route                      | `formName`                  |
+| -------------------------- | --------------------------- |
+| `/api/register/start`      | `Startup E+ - Registration` |
 | `/api/register` (aspirant) | `Startup E+ - The Aspirant` |
 | `/api/register` (beginner) | `Startup E+ - The Beginner` |
-| `/api/contact` | `Startup E+ - Contact` |
+| `/api/contact`             | `Startup E+ - Contact`      |
 
 ### Environment variables
 
-| Variable | Required | Purpose |
-|---|---|---|
-| `CRM_LEADS_URL` | yes | the CRM's save-enquiry endpoint |
-| `CRM_API_KEY` | yes | sent as `X-API-Key` |
-| `CRM_BRANCH_ID` | yes | integer, sent as `branchID` |
-| `CRM_NOTIFY_EMAIL` | yes | the endpoint 400s without it |
-| `CRM_LEAD_SOURCE` | no | overrides the CRM's own source |
-| `CRM_ADDITIONAL_DATA` | no | `off` drops the custom-field map |
-| `CRM_DROP` | no | comma-separated keys to strip from every lead |
-| `RESEND_API_KEY` + `MAIL_FROM` | no | preferred mail transport |
-| `MAIL_USER` + `MAIL_APP_PASSWORD` | no | SMTP fallback |
-| `MAIL_REPLY_TO` | no | reply-to on the confirmation email |
-| `NEXT_PUBLIC_SITE_URL` | no | used by the origin check; defaults to the production URL |
+| Variable                          | Required | Purpose                                                  |
+| --------------------------------- | -------- | -------------------------------------------------------- |
+| `CRM_LEADS_URL`                   | yes      | the CRM's save-enquiry endpoint                          |
+| `CRM_API_KEY`                     | yes      | sent as `X-API-Key`                                      |
+| `CRM_BRANCH_ID`                   | yes      | integer, sent as `branchID`                              |
+| `CRM_NOTIFY_EMAIL`                | yes      | the endpoint 400s without it                             |
+| `CRM_LEAD_SOURCE`                 | no       | overrides the CRM's own source                           |
+| `CRM_ADDITIONAL_DATA`             | no       | `off` drops the custom-field map                         |
+| `CRM_DROP`                        | no       | comma-separated keys to strip from every lead            |
+| `RESEND_API_KEY` + `MAIL_FROM`    | no       | preferred mail transport                                 |
+| `MAIL_USER` + `MAIL_APP_PASSWORD` | no       | SMTP fallback                                            |
+| `MAIL_REPLY_TO`                   | no       | reply-to on the confirmation email                       |
+| `NEXT_PUBLIC_SITE_URL`            | no       | used by the origin check; defaults to the production URL |
 
 `CRM_ADDITIONAL_DATA` and `CRM_DROP` are escape hatches: the CRM answers `500`
 with an empty body on leads it dislikes, giving nothing to debug from, so being

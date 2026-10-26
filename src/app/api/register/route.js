@@ -1,3 +1,4 @@
+import { rejectRequest, readJsonBody } from "@/lib/api-guard";
 import { isCrmConfigured, sendLead } from "@/lib/crm";
 import { schemaForPortal } from "@/lib/register-schema";
 
@@ -15,14 +16,17 @@ import { schemaForPortal } from "@/lib/register-schema";
  * that hand-off is the only sink: nothing is stored here, so a CRM failure is
  * reported back as an error and the visitor is asked to try again, rather than
  * being thanked for a registration that went nowhere.
+ *
+ * Until the mobile app arrived this route had no guards at all - no origin
+ * check, no rate limit, no body cap - while the two beside it had all three. It
+ * now goes through the same front door as the rest: see lib/api-guard.js.
  */
 export async function POST(request) {
-  let payload;
-  try {
-    payload = await request.json();
-  } catch {
-    return Response.json({ ok: false, error: "Malformed request body" }, { status: 400 });
-  }
+  const rejected = rejectRequest(request);
+  if (rejected) return rejected;
+
+  const { payload, response } = await readJsonBody(request);
+  if (response) return response;
 
   const { portal, ...data } = payload ?? {};
   const schema = schemaForPortal(portal);

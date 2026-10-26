@@ -67,17 +67,17 @@ The short front-door form. This is almost certainly the one the app wants.
 }
 ```
 
-| Key | Type | Required | Notes |
-|---|---|---|---|
-| `fullName` | string | yes | 2–120 after whitespace collapsing. Any alphabet, Malayalam included. |
-| `age` | string or number | yes | integer 14–99 |
-| `occupation` | string | yes | exactly `student`, `entrepreneur` or `business` |
-| `email` | string | yes | valid email |
-| `phone` | string | yes | 10-digit Indian mobile, starts 6–9. Spaces, dashes and brackets are stripped server-side, and `+91` / `91` / `0` prefixes are allowed. |
-| `altPhone` | string | no | same rule, or `""` |
-| `address` | string | yes | 6–240 after whitespace collapsing |
-| `district` | string | yes | one of the 14 Kerala districts, exact spelling |
-| `website` | string | no | **honeypot — always send `""` or omit** |
+| Key          | Type             | Required | Notes                                                                                                                                  |
+| ------------ | ---------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `fullName`   | string           | yes      | 2–120 after whitespace collapsing. Any alphabet, Malayalam included.                                                                   |
+| `age`        | string or number | yes      | integer 14–99                                                                                                                          |
+| `occupation` | string           | yes      | exactly `student`, `entrepreneur` or `business`                                                                                        |
+| `email`      | string           | yes      | valid email                                                                                                                            |
+| `phone`      | string           | yes      | 10-digit Indian mobile, starts 6–9. Spaces, dashes and brackets are stripped server-side, and `+91` / `91` / `0` prefixes are allowed. |
+| `altPhone`   | string           | no       | same rule, or `""`                                                                                                                     |
+| `address`    | string           | yes      | 6–240 after whitespace collapsing                                                                                                      |
+| `district`   | string           | yes      | one of the 14 Kerala districts, exact spelling                                                                                         |
+| `website`    | string           | no       | **honeypot — always send `""` or omit**                                                                                                |
 
 > `website` is a bot trap. If it arrives with any value the submission is
 > silently discarded and the route still answers `201` with
@@ -123,7 +123,7 @@ Rules no single field expresses:
   acknowledgement is a hard gate — the app needs a real checkbox, not a
   hardcoded `true`.
 - `whatsapp` here is **stricter than `/start`'s `phone`**: it accepts a `+91`
-  or `0` prefix but *not* spaces between digit groups. Send `9876543210`, not
+  or `0` prefix but _not_ spaces between digit groups. Send `9876543210`, not
   `98765 43210`.
 
 Beginner:
@@ -228,7 +228,7 @@ rejected without a database lookup.
 > show the failure and let them retry. A retry mints a fresh ID.
 >
 > Relatedly: there is no longer a PDF pass. That was removed. The registration
-> ID *is* the pass — display it as the thing to quote at the office.
+> ID _is_ the pass — display it as the thing to quote at the office.
 
 ### `/api/register` and `/api/contact`
 
@@ -246,15 +246,15 @@ One shape, one message per field:
 { "ok": false, "errors": { "phone": "Enter a valid 10-digit number" } }
 ```
 
-| Status | Meaning |
-|---|---|
-| `400` | body was not valid JSON, or `portal` is unknown (`/api/register`) |
-| `403` | origin rejected — see §5 |
-| `413` | body too large (8 KB on `/start`, 16 KB on `/contact`) |
-| `422` | validation; `errors` is keyed by field name |
-| `429` | rate limited — see §6 |
-| `500` | server misconfigured (CRM credentials missing) |
-| `502` | the CRM rejected or timed out. **The lead was not filed.** Show an error and let the user retry. |
+| Status | Meaning                                                                                          |
+| ------ | ------------------------------------------------------------------------------------------------ |
+| `400`  | body was not valid JSON, or `portal` is unknown (`/api/register`)                                |
+| `403`  | origin rejected — see §5                                                                         |
+| `413`  | body too large (8 KB on `/start`, 16 KB on `/contact`)                                           |
+| `422`  | validation; `errors` is keyed by field name                                                      |
+| `429`  | rate limited — see §6                                                                            |
+| `500`  | server misconfigured (CRM credentials missing)                                                   |
+| `502`  | the CRM rejected or timed out. **The lead was not filed.** Show an error and let the user retry. |
 
 The `errors` keys match the request keys exactly, so the app can map them
 straight onto its form fields.
@@ -287,12 +287,12 @@ before that anyway. Sending it is harmless but has no effect.
 
 The four strings are correct as listed, and the server sends exactly those:
 
-| Route | `formName` sent to the CRM |
-|---|---|
-| `/api/register/start` | `Startup E+ - Registration` |
+| Route                                     | `formName` sent to the CRM  |
+| ----------------------------------------- | --------------------------- |
+| `/api/register/start`                     | `Startup E+ - Registration` |
 | `/api/register` with `portal: "aspirant"` | `Startup E+ - The Aspirant` |
 | `/api/register` with `portal: "beginner"` | `Startup E+ - The Beginner` |
-| `/api/contact` | `Startup E+ - Contact` |
+| `/api/contact`                            | `Startup E+ - Contact`      |
 
 So the thing that steers CRM routing from the app is **`portal`** on
 `/api/register`. Get that right and the executive assignment follows.
@@ -301,36 +301,49 @@ So the thing that steers CRM routing from the app is **`portal`** on
 
 ---
 
-## 5. Origin check — the app will work, and that is the problem
+## 5. Auth — a shared secret is now required
 
-**Direct answer: a request with no `Origin` header is allowed.** The check is:
+**This changed. The app must send a header it did not need before.**
 
-```js
-const origin = request.headers.get("origin");
-if (!origin) return false;   // false = "not a wrong origin" = allowed
+```
+X-App-Key: <the secret>
 ```
 
-It only rejects a request that carries an `Origin` *and* it does not match the
-site. A native app sends none, so it passes. `/api/register` has no origin
-check at all.
+The rule, for `POST /api/register` and `POST /api/contact`:
 
-**There is no API key, and I am not going to invent a header name for one.**
-No shared secret exists today. The app will work with no authentication because
-the endpoints have none — which also means anyone who knows the URLs can post
-to them. The check is a same-origin guard against another *website* posting as
-a visitor; it was never authentication.
+| Caller                                 | Sends `Origin`? | Requirement                           |
+| -------------------------------------- | --------------- | ------------------------------------- |
+| The website's own forms                | yes, this site  | nothing — authorised by Origin        |
+| Another website                        | yes, elsewhere  | `403 Bad origin`                      |
+| The mobile app, curl, server-to-server | no              | **must send `X-App-Key`**, else `401` |
 
-This is worth a decision before the app ships, because a mobile client makes
-the endpoints meaningfully more exposed:
+So the app sends the header on every POST; the website is unaffected and sends
+nothing.
 
-| Option | What it costs |
-|---|---|
-| Ship as-is | Nothing. Accepts that the endpoints are open; the per-IP rate limit and honeypot are the only brakes. |
-| Shared secret header | Small: the app sends e.g. `X-App-Key: <secret>`, the route requires it when there is no trusted origin. A secret shipped inside an app binary is extractable, so this raises the bar without being real authentication. |
-| Proper client auth | Larger: signed tokens, a key that can be rotated and revoked per release. |
+**The secret is not in this document, and will not be sent by email.** It is
+generated by the office and handed to you directly. On the server it lives in
+`APP_API_KEY`.
 
-Tell me which you want and I will implement it. Until then the honest answer to
-"what header and value should the app send" is: **none — there isn't one.**
+Two things worth being straight about:
+
+- **It fails closed.** If `APP_API_KEY` is not set on the server, requests with
+  no Origin are refused outright rather than waved through — a forgotten
+  environment variable cannot silently reopen the endpoint. If the app gets a
+  blanket `401` after deploy, that is the first thing to check.
+- **It is not real authentication.** A secret shipped inside an app binary can
+  be extracted from it. This raises the bar a long way above "anyone with the
+  URL", and it is the right step for these endpoints today, but it should not be
+  mistaken for per-user auth.
+
+Verified behaviour, both routes:
+
+```
+no Origin, no key        401
+no Origin, wrong key     401
+no Origin, correct key   proceeds
+Origin: the site         proceeds   (no key needed)
+Origin: anywhere else    403
+```
 
 ---
 
@@ -344,11 +357,13 @@ Tell me which you want and I will implement it. Until then the honest answer to
 - **Rate limits**, per IP, in server memory — they reset on redeploy and are
   per instance, so treat them as a speed bump rather than a guarantee:
 
-  | Route | Limit | Body cap |
-  |---|---|---|
-  | `/api/register/start` | 4 per 10 min | 8 KB |
-  | `/api/contact` | 5 per 10 min | 16 KB |
-  | `/api/register` | **none** | **none** |
+  | Route           | Limit         | Body cap |
+  | --------------- | ------------- | -------- |
+  | `/api/contact`  | 30 per 10 min | 16 KB    |
+  | `/api/register` | 30 per 10 min | 16 KB    |
+
+  Raised from 5, and added to `/api/register` which previously had no limit,
+  no body cap and no honeypot at all.
 
   Worth flagging: several users behind one mobile network NAT can share an
   apparent IP, so a shared-IP crowd at an event could hit the `/start` limit of

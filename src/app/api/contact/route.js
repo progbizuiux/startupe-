@@ -1,5 +1,5 @@
-import { siteConfig } from "@/config/site";
 import { isCrmConfigured, sendLead } from "@/lib/crm";
+import { rejectRequest, rejectIfThrottled, readJsonBody } from "@/lib/api-guard";
 import { contactSchema } from "@/lib/contact-schema";
 
 /**
@@ -24,77 +24,12 @@ import { contactSchema } from "@/lib/contact-schema";
  * this ever gets targeted properly.
  */
 
-/* Enough for a 1200-character message and the rest of the fields several times
-   over; anything larger is not a person filling in a form. */
-const MAX_BODY_BYTES = 16 * 1024;
-
-const RATE_LIMIT = { max: 5, windowMs: 10 * 60 * 1000 };
-
-/**
- * Per-IP throttle held in module memory. This is a speed bump, not a guarantee:
- * it is per server instance, so it resets on redeploy and does not coordinate
- * across instances. It exists to stop one script emptying a mailbox, and should
- * be replaced with something shared if abuse ever becomes real.
- */
-const hits = new Map();
-
-function throttled(ip, now) {
-  const fresh = (hits.get(ip) ?? []).filter((at) => now - at < RATE_LIMIT.windowMs);
-  fresh.push(now);
-  hits.set(ip, fresh);
-
-  /* the map only ever grows otherwise: drop everyone whose window has passed */
-  if (hits.size > 500) {
-    for (const [key, times] of hits) {
-      if (times.every((at) => now - at >= RATE_LIMIT.windowMs)) hits.delete(key);
-    }
-  }
-
-  return fresh.length > RATE_LIMIT.max;
-}
-
-/** First hop in X-Forwarded-For is the client; fall back to one bucket. */
-const clientIp = (request) =>
-  (request.headers.get("x-forwarded-for") ?? "").split(",")[0].trim() || "unknown";
-
-/**
- * Rejects a cross-site POST. Only checked when the header is present: a browser
- * sends Origin on any fetch POST, while server-side callers (scripts/crm-smoke-test.mjs)
- * send none and are let through.
- */
-function wrongOrigin(request) {
-  const origin = request.headers.get("origin");
-  if (!origin) return false;
-  try {
-    return new URL(origin).origin !== new URL(siteConfig.url).origin;
-  } catch {
-    return true;
-  }
-}
-
 export async function POST(request) {
-  if (wrongOrigin(request)) {
-    return Response.json({ ok: false, error: "Bad origin" }, { status: 403 });
-  }
+  const rejected = rejectRequest(request);
+  if (rejected) return rejected;
 
-  /* The Content-Length header is only a cheap pre-filter and must never be the
-     actual cap: a chunked POST sends no Content-Length, `Number(null)` is NaN,
-     and `NaN > MAX` is false - so the body would sail past this line. The real
-     check is on the text below, after it has been read. */
-  if (Number(request.headers.get("content-length")) > MAX_BODY_BYTES) {
-    return Response.json({ ok: false, error: "Message too large" }, { status: 413 });
-  }
-
-  let payload;
-  try {
-    const raw = await request.text();
-    if (raw.length > MAX_BODY_BYTES) {
-      return Response.json({ ok: false, error: "Message too large" }, { status: 413 });
-    }
-    payload = JSON.parse(raw);
-  } catch {
-    return Response.json({ ok: false, error: "Malformed request body" }, { status: 400 });
-  }
+  const { payload, response } = await readJsonBody(request);
+  if (response) return response;
 
   /* Honeypot, checked before validation and before the throttle. A real visitor
      never sees the field, so anything in it is a bot - answer 201 as though it
@@ -105,14 +40,8 @@ export async function POST(request) {
     return Response.json({ ok: true }, { status: 201 });
   }
 
-  const now = Date.now();
-  const ip = clientIp(request);
-  if (throttled(ip, now)) {
-    return Response.json(
-      { ok: false, error: "Too many messages from here. Please try again later." },
-      { status: 429 },
-    );
-  }
+  const limited = rejectIfThrottled(request, "Too many messages from here.");
+  if (limited) return limited;
 
   const parsed = contactSchema.safeParse(payload ?? {});
   if (!parsed.success) {
