@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 
 /**
  * Pill buttons (Figma). Use `buttonVariants()` on a <Link> for link-buttons:
- *   <Link href="/register" className={buttonVariants({ size: "md" })}>Join</Link>
+ *   <Link href="/#cta" className={buttonVariants({ size: "md" })}>Join</Link>
  */
 export const buttonVariants = cva(
   [

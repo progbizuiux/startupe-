@@ -37,12 +37,15 @@ export function Hero() {
                 </span>
               ))}
             </h1>
-            {/* Mobile: Join the Grand Launch button navigating to /register */}
+            {/* Phones get the registration CTA up front; the desktop hero
+                leads with "See how it works" lower down instead. Points at the
+                band where you pick a portal, now that the Grand Launch and its
+                one-form registration are over. */}
             <Link
-              href="/register"
+              href="/#cta"
               className={cn(buttonVariants({ size: "md" }), "mt-7 inline-flex sm:hidden")}
             >
-              Join the Grand Launch
+              Join the Movement
             </Link>
 
             {/* Desktop: standard hero CTA */}

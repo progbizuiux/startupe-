@@ -4,7 +4,7 @@
  *
  * Every answer below is drawn from copy that already exists elsewhere on the
  * site - the audience cards and the five phases in src/data/about-page.js, the
- * two portal intros in src/data/register.js, and what /register actually does.
+ * two portal intros in src/data/register.js, and what the portals ask for.
  * Nothing here states a fact the site does not state somewhere else: no dates,
  * no fees, no eligibility rule, no promise about places or funding. If an
  * answer needs one of those, it has to come from the office first.
@@ -26,14 +26,14 @@ export const faq = {
         "It runs in five phases. Entrepreneurship Clubs inside schools, colleges, youth clubs and women's collectives build the foundation. The Startup Caravan then takes sessions and on-the-spot registration out to towns and campuses. Structured hackathons turn loose ideas into early business models, while a diagnostic track reviews struggling ventures. The Startup Conclave delivers hands-on training in legal compliance, unit economics and operations, alongside a stabilisation track for businesses correcting course. Finally the Investors' Meet puts refined ventures in front of banks, investors and funding partners.",
     },
     {
-      question: "What happens after I register?",
+      question: "What happens after I apply?",
       answer:
-        "The form takes about a minute. You get a Startup E+ registration ID and a pass to download straight away, and your registration is recorded with the Startup E+ office. You are then pointed to the portal that fits you, where the detailed application lives. Save the pass when it appears: it is issued once, and the page cannot generate it again.",
+        "Your application goes to the Startup E+ office, where it is read by the team working that portal. The form asks for what they need to place you: who you are, where you are based, and where you have got to. There is nothing to do while you wait, and the office gets in touch on the email and number you give.",
     },
     {
       question: "Which portal is mine, The Aspirant or The Beginner?",
       answer:
-        "The Aspirant is for students, recent graduates and anyone with an idea or a business they have not registered yet. The Beginner is for registered startups and new micro-enterprises, roughly 0-2 years old, working through launch, product-market fit and first customers. You do not have to decide on your own: the registration form asks whether you are a student, an entrepreneur or a business, and sends you to the right one.",
+        "The Aspirant is for students, recent graduates and anyone with an idea or a business they have not registered yet. The Beginner is for registered startups and new micro-enterprises, roughly 0-2 years old, working through launch, product-market fit and first customers. If you are between the two, pick the one that describes where you are today - the office moves people across where it makes sense.",
     },
   ],
 };

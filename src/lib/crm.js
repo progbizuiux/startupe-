@@ -89,28 +89,11 @@ const compact = (object) =>
    executive, so these strings are part of the integration - changing one means
    changing the assignment rule on the CRM side too. Plain ASCII: they are
    matched against rules typed into the CRM, where an em dash invites a mismatch. */
-/*
- * Which event the enquiry came in for.
- *
- * Every registration the site takes today is for the Grand Launch, and the CRM
- * cannot tell that from the lead alone - the form name says which FORM was
- * filled, not what it was filled FOR. A second event will eventually share
- * these forms, and leads filed before this line existed will be the ones with
- * no Event at all, so the marker is worth carrying now rather than being
- * reconstructed from timestamps later.
- *
- * Written here rather than taken from the form: the person registering is not
- * asked which event they mean, and never should be. Plain ASCII and the exact
- * wording the site uses ("Join the Grand Launch"), because this is matched
- * against rules typed into the CRM by hand.
- */
-const ENQUIRY_EVENT = "Grand Launch";
 
 const FORM_NAME = {
   aspirant: "Startup E+ - The Aspirant",
   beginner: "Startup E+ - The Beginner",
   contact: "Startup E+ - Contact",
-  registerStart: "Startup E+ - Registration",
 };
 
 /** Portal 1: the applicant is the contact. */
@@ -242,67 +225,10 @@ function fromContact(data) {
   };
 }
 
-/**
- * The /register front door. Eight fields plus the registration ID this site
- * issued, which is the whole point of the lead: nothing is stored here, so the
- * CRM record is the only place that ID can ever be looked up again. It is
- * therefore the FIRST line of the description as well as a custom field -
- * CRM_ADDITIONAL_DATA=off drops the custom-field map wholesale, and an ID that
- * lived only there would vanish during exactly the outage that hatch exists
- * for. The same reasoning puts ENQUIRY_EVENT in both places, one line below it:
- * it is what tells the office WHICH event a lead belongs to, and it is no use if
- * the one hatch that exists for a bad day is what drops it.
- *
- * state is hardcoded to Kerala here, unlike fromContact: the form only offers
- * Kerala districts, so it cannot be wrong.
- *
- * The street address and the alternate number go in `description` and
- * `additionalData` rather than into top-level keys. The CRM models a contact
- * plus free text and has real columns only for the handful this file already
- * fills (see the note at the top); a key it does not know is answered with an
- * empty 500, and an address is not worth losing the whole lead over.
- */
-function fromRegisterStart(data) {
-  return {
-    fullName: data.fullName,
-    email: data.email,
-    phoneNumber: toE164(data.phone),
-    whatsappNumber: toE164(data.phone),
-    city: data.district,
-    state: "Kerala",
-    country: "India",
-    description: lines([
-      ["Registration ID", data.registrationId],
-      ["Event", ENQUIRY_EVENT],
-      ["Portal", "Registration"],
-      ["Occupation", data.occupationLabel ?? data.occupation],
-      ["Pathway", data.pathway],
-      ["Age", data.age],
-      ["Phone", toE164(data.phone)],
-      ["Alternate contact", toE164(data.altPhone)],
-      ["Address", data.address],
-      ["District", data.district],
-      ["Next step", data.next],
-    ]),
-    additionalData: compact({
-      RegistrationID: data.registrationId,
-      Event: ENQUIRY_EVENT,
-      Portal: "Registration",
-      Occupation: data.occupationLabel ?? data.occupation,
-      Pathway: data.pathway,
-      Age: data.age,
-      AlternatePhone: toE164(data.altPhone),
-      Address: data.address,
-      District: data.district,
-    }),
-  };
-}
-
 const MAPPERS = {
   aspirant: fromAspirant,
   beginner: fromBeginner,
   contact: fromContact,
-  registerStart: fromRegisterStart,
 };
 
 /**

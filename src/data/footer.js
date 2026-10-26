@@ -17,7 +17,7 @@ export const footer = {
       links: [
         { label: "About", href: "/about" },
         { label: "Contact", href: "/contact" },
-        { label: "Register", href: "/register" },
+        { label: "Register", href: "/#cta" },
         { label: "Process", href: "/#join" },
         // { label: "Faq", href: "/#faq" },
       ],

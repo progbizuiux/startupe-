@@ -22,13 +22,16 @@ export const siteConfig = {
     { label: "About", href: "/about" }, // the About page
     { label: "Partners", href: "/#partners" }, // "Built with Kerala's best" strip
     { label: "Contact", href: "/contact" }, // the Contact page
-    /* No "Register" link: the button to its right already goes to /register,
-       and two header items pointing at the same page made the button read as a
+    /* No "Register" link: the button to its right already goes to the same
+       place, and two header items pointing at it made the button read as a
        duplicate rather than the one thing to press. */
   ],
 
   /* Header: right-side button (desktop header and the mobile menu) */
-  cta: { label: "Join the Grand Launch", href: "/register" },
+  /* The Grand Launch had its own one-form registration at /register. That
+     event is over and the page is gone, so this now points at the band on the
+     home page where you pick the portal that fits you. */
+  cta: { label: "Join the Movement", href: "/#cta" },
 
   /* Footer social icons (keys must match src/components/ui/social-icons.jsx).
      The footer renders one icon per entry, so an account without a real URL is

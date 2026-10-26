@@ -10,7 +10,17 @@ export function PortalLayout({ portal, children }) {
     <section className="section-y">
       <Container>
         <div className="grid gap-12 lg:grid-cols-[38%_1fr] lg:gap-x-[6%]">
-          <div>
+          {/* From lg this column sticks below the header while the form scrolls
+              past, so "What you get" stays on screen for the whole of a long
+              form — the same treatment the story heading gets on /about and the
+              address block on /contact.
+
+              `lg:self-start` is what makes it work, not decoration: a grid item
+              stretches to the row height by default, and an item as tall as its
+              track has no room left to move against, so the sticky never
+              engages. Below lg none of it applies and the block simply sits
+              above the form, where sticking would only cover the fields. */}
+          <div className="lg:sticky lg:top-[calc(var(--header-height)+2rem)] lg:self-start">
             <span className="eyebrow text-muted-foreground">{portal.eyebrow}</span>
             <h1 className="mt-4 text-h3">{portal.heading}</h1>
             <p className="mt-5 text-muted-foreground">{portal.intro}</p>
