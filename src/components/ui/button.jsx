@@ -15,13 +15,13 @@ export const buttonVariants = cva(
   {
     variants: {
       variant: {
-        primary: "bg-primary text-primary-foreground hover:bg-brand-600",
+        primary: "bg-primary text-primary-foreground hover:bg-ink-800",
         light: "bg-background text-foreground hover:bg-ink-100", // on coloured bands
         secondary: "bg-secondary text-secondary-foreground hover:bg-ink-200",
         dark: "bg-foreground text-background hover:bg-ink-800",
         outline: "border border-border bg-transparent hover:bg-muted",
         ghost: "hover:bg-muted",
-        link: "text-accent underline-offset-4 hover:underline",
+        link: "text-lime-ink underline-offset-4 hover:underline",
       },
       size: {
         sm: "h-10 px-4 text-small",

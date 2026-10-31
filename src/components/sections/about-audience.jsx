@@ -48,7 +48,7 @@ export function AboutAudience() {
               >
                 <span
                   aria-hidden="true"
-                  className="inline-grid size-11 place-items-center rounded-card bg-indigo/10 text-indigo"
+                  className="inline-grid size-11 place-items-center rounded-card bg-lime/10 text-lime-ink"
                 >
                   <Icon className="size-5" strokeWidth={1.75} />
                 </span>

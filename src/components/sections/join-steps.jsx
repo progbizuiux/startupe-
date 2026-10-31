@@ -129,14 +129,14 @@ export function JoinSteps({ steps }) {
             {/* numeral + line track, from sm only (decorative - the card's
                 "Step 0N" label carries the meaning) */}
             <div aria-hidden="true" className="hidden flex-col items-center sm:flex">
-              <span className="font-heading text-h1 leading-none font-light tracking-normal text-ink-300 tabular-nums transition-colors duration-500 group-data-[active=true]:text-indigo">
+              <span className="font-heading text-h1 leading-none font-light tracking-normal text-ink-300 tabular-nums transition-colors duration-500 group-data-[active=true]:text-lime-ink">
                 {number}
               </span>
               {!isLast && (
                 <div className="relative mt-2 w-px flex-1 bg-border">
                   <span
                     data-fill
-                    className="absolute inset-0 origin-top scale-y-0 bg-indigo motion-reduce:hidden"
+                    className="absolute inset-0 origin-top scale-y-0 bg-lime motion-reduce:hidden"
                   />
                   {/* reduced motion: the design's static tick under the first numeral */}
                   {i === 0 && (
@@ -160,16 +160,16 @@ export function JoinSteps({ steps }) {
               <span
                 data-bar
                 aria-hidden="true"
-                className="absolute inset-y-0 left-0 w-[3px] origin-top bg-indigo sm:hidden"
+                className="absolute inset-y-0 left-0 w-[3px] origin-top bg-lime sm:hidden"
               />
               <span
                 aria-hidden="true"
-                className="pointer-events-none absolute top-2 right-4 font-heading text-[3.5rem] leading-none font-light text-foreground/10 tabular-nums transition-colors duration-500 group-data-[active=true]:text-indigo/25 sm:hidden"
+                className="pointer-events-none absolute top-2 right-4 font-heading text-[3.5rem] leading-none font-light text-foreground/10 tabular-nums transition-colors duration-500 group-data-[active=true]:text-lime-ink/25 sm:hidden"
               >
                 {number}
               </span>
 
-              <span className="eyebrow text-caption text-muted-foreground transition-colors duration-500 group-data-[active=true]:text-indigo max-sm:rounded-full max-sm:bg-background max-sm:px-3 max-sm:py-1 max-sm:group-data-[active=true]:bg-indigo max-sm:group-data-[active=true]:text-background">
+              <span className="eyebrow text-caption text-muted-foreground transition-colors duration-500 group-data-[active=true]:text-lime-ink max-sm:rounded-full max-sm:bg-background max-sm:px-3 max-sm:py-1 max-sm:group-data-[active=true]:bg-lime max-sm:group-data-[active=true]:text-foreground">
                 {step.label}
               </span>
               <h3 className="mt-6 text-h5">{step.title}</h3>

@@ -14,19 +14,24 @@
    ============================================================================ */
 
 :root {
-  /* ---------- Brand blue (CTA buttons) ----------
-     500 is the brand blue; the rest of the scale is tinted / shaded from it. */
-  --brand-50: #eef5fe;
-  --brand-100: #d3e3fb;
-  --brand-200: #b1cff8;
-  --brand-300: #84b6f5;
-  --brand-400: #589ef1;
-  --brand-500: #207ded; /* primary brand blue */
-  --brand-600: #1b6ac9;
-  --brand-700: #1658a6;
-  --brand-800: #134b8e;
-  --brand-900: #103f77;
-  --brand-950: #0a284c;
+  /* ---------- Brand lime ----------
+     500 is the lime from the logo's "+"; the rest is tinted / shaded from it.
+
+     Read the contrast notes before using one of these. Lime is a very light
+     hue: at 500 it is 1.77:1 on white, so it CANNOT carry text on a white
+     background and cannot take white text on top of it (1.54:1). It is a
+     background and a mark colour. The 700-950 end is where text lives. */
+  --brand-50: #f9fcf1;
+  --brand-100: #f2f7df;
+  --brand-200: #e5f0bf;
+  --brand-300: #d4e694;
+  --brand-400: #c1db66;
+  --brand-500: #add036; /* the logo lime - backgrounds and marks only */
+  --brand-600: #93b12e;
+  --brand-700: #7d9627; /* 3.35:1 on white - large text and focus rings only */
+  --brand-800: #687d20; /* 4.62:1 on white - the lightest usable for body text */
+  --brand-900: #57681b;
+  --brand-950: #3b4712;
 
   /* ---------- Ink / neutral ---------- */
   --ink-0: #ffffff;
@@ -46,12 +51,17 @@
   /* ---------- Highlights (text boxes in the "about" headline; approximated from the design) ---------- */
   --highlight-pink: #ff1ec0;
   --highlight-yellow: #f5d737;
-  /* Accent for step numbers / labels and the "Register Now" button. Kept as its
-     own name for the places the design calls "indigo", but set to the brand blue
-     so the site has one blue rather than two. */
-  --indigo: #207ded;
+  /* Accent for step numbers, labels, bullets and the "Register Now" fill.
+     Was --indigo and the brand blue; the logo's lime replaces it. */
+  --lime: #93b12e; /* small marks on white: 500 is too faint at this size */
+  /* Lime that can be TEXT, at any size, on any surface this site uses:
+     6.17:1 on white, 5.62:1 on --muted, 5.87:1 on a lime/10 tint. The mark lime
+     above is 2.45:1 and fails everywhere, which is why these are two tokens and
+     not one. A lighter olive (#687d20) clears white at 4.62:1 but drops to 4.21
+     on --muted, so it is not safe for the chips that sit on that band. */
+  --lime-ink: #57681b;
   /* Light violet used for the gradient stroke on the "what Startup E+ is" pillar cards */
-  --violet-500: #a78bfa;
+  --violet-500: #add036; /* kept its name; the gradient ring is lime now */
 
   /* ---------- Gold accent (premium / highlights) ---------- */
   --gold-100: #faf3d6;
@@ -80,13 +90,16 @@
   --popover-foreground: var(--ink-950);
   --border: var(--ink-200);
   --input: var(--ink-300);
-  --ring: var(--brand-500);
-  --primary: var(--brand-500); /* CTA buttons, e.g. "Join the Grand Launch" */
+  --ring: var(--brand-700); /* 3.35:1 on white - a focus ring needs 3:1 */
+  /* Buttons are near-black, not lime. The logo uses lime as a spot accent on a
+     black wordmark, and this follows it: white on ink-950 is 16.4:1, where
+     white on lime would be 1.54:1 and unreadable. */
+  --primary: var(--ink-950);
   --primary-foreground: var(--ink-0);
   --secondary: var(--ink-100);
   --secondary-foreground: var(--ink-900);
   --accent: var(--brand-500);
-  --accent-foreground: var(--ink-0);
+  --accent-foreground: var(--ink-950); /* dark on lime: 10.6:1 */
   --destructive: var(--danger);
   --destructive-foreground: var(--ink-0);
 
@@ -180,7 +193,11 @@
 
   /* ---------- Decorative ---------- */
   /* Gradient text, e.g. "Grow" in the hero headline (violet -> magenta -> pink, approximated) */
-  --gradient-brand: linear-gradient(90deg, #7c3aed 0%, #c026d3 50%, #ff2d78 100%);
+  /* The hero highlight. Every stop is at least 3:1 on white, which is the
+     threshold for large text - the h1 it sits in is 32-52px. A ramp running up
+     into the logo lime itself would finish at 1.77:1 and the last word would
+     disappear, so it stops at 700. */
+  --gradient-brand: linear-gradient(90deg, #3b4712 0%, #687d20 55%, #7d9627 100%);
   /* Faint background grid behind the hero */
   --grid-line: rgb(17 17 17 / 0.06);
   --grid-size: 7.25rem; /* 116px cells */
@@ -221,13 +238,15 @@
   --popover-foreground: var(--ink-50);
   --border: var(--ink-800);
   --input: var(--ink-700);
-  --ring: var(--brand-400);
-  --primary: var(--brand-400);
-  --primary-foreground: var(--ink-0);
+  --ring: var(--brand-500);
+  /* On a dark ground lime CAN be the button: dark text on lime is 10.6:1,
+     where white on lime is 1.54:1 either way. */
+  --primary: var(--brand-500);
+  --primary-foreground: var(--ink-950);
   --secondary: var(--ink-800);
   --secondary-foreground: var(--ink-50);
-  --accent: var(--brand-400);
-  --accent-foreground: var(--ink-0);
+  --accent: var(--brand-500);
+  --accent-foreground: var(--ink-950);
 
   --elevation-card: 0 1px 2px rgb(0 0 0 / 0.4), 0 4px 12px rgb(0 0 0 / 0.5);
   --elevation-elevated: 0 12px 32px -12px rgb(0 0 0 / 0.7);
@@ -266,7 +285,8 @@
 
   --color-highlight-pink: var(--highlight-pink);
   --color-highlight-yellow: var(--highlight-yellow);
-  --color-indigo: var(--indigo);
+  --color-lime: var(--lime);
+  --color-lime-ink: var(--lime-ink);
   --color-violet-500: var(--violet-500);
 
   --color-gold-100: var(--gold-100);
@@ -459,7 +479,8 @@
 
   /* Shimmer sweep for the ID card */
   @keyframes success-shimmer {
-    0%, 100% {
+    0%,
+    100% {
       background-position: -200% center;
     }
     50% {

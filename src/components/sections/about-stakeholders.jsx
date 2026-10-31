@@ -35,9 +35,9 @@ export function AboutStakeholders() {
               <div className="lg:pr-12">
                 <h3 className="text-h6">{item.name}</h3>
                 <span className="mt-1 block text-small text-muted-foreground">{item.unit}</span>
-                {/* brand-700 rather than the brand blue: at 12px on the muted
-                    pill the lighter blue only reaches 3.7:1, this reaches 6.4:1 */}
-                <span className="mt-3 inline-block rounded-button bg-muted px-3 py-1 text-caption font-medium text-brand-700">
+                {/* lime-ink, not the mark lime: at 12px on the muted pill the
+                    mark lime reaches only 3.05:1, this reaches 5.62:1 */}
+                <span className="mt-3 inline-block rounded-button bg-muted px-3 py-1 text-caption font-medium text-lime-ink">
                   {item.role}
                 </span>
               </div>

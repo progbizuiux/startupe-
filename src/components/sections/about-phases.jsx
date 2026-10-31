@@ -44,14 +44,14 @@ export function AboutPhases() {
                 {String(i + 1).padStart(2, "0")}
               </span>
 
-              <span className="relative eyebrow text-caption text-indigo">{phase.label}</span>
+              <span className="relative eyebrow text-caption text-lime-ink">{phase.label}</span>
               <h3 className="relative mt-4 text-h6">{phase.title}</h3>
               <p className="relative mt-4 text-small">{phase.text}</p>
             </li>
           ))}
 
           {/* Accent tile: the outcome the five phases add up to */}
-          <li className="flex flex-col justify-between gap-6 rounded-[16px] bg-indigo p-6 text-background sm:p-8">
+          <li className="flex flex-col justify-between gap-6 rounded-[16px] bg-lime p-6 text-background sm:p-8">
             <div>
               <h3 className="text-h6 text-background">{phases.outcome.title}</h3>
               <p className="mt-4 text-small text-background/85">{phases.outcome.text}</p>

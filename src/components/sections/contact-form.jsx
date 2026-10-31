@@ -94,7 +94,7 @@ export function ContactForm() {
                     <>
                       <span
                         aria-hidden="true"
-                        className="inline-grid size-10 shrink-0 place-items-center rounded-card bg-indigo/10 text-indigo transition-colors group-hover:bg-indigo group-hover:text-background"
+                        className="inline-grid size-10 shrink-0 place-items-center rounded-card bg-lime/10 text-lime-ink transition-colors group-hover:bg-lime group-hover:text-foreground"
                       >
                         <Icon className="size-[18px]" strokeWidth={1.75} />
                       </span>

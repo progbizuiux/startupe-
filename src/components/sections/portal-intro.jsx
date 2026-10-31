@@ -31,7 +31,7 @@ export function PortalLayout({ portal, children }) {
                 <li key={item} className="flex gap-3 text-muted-foreground">
                   <span
                     aria-hidden="true"
-                    className="mt-2 size-1.5 shrink-0 rounded-full bg-indigo"
+                    className="mt-2 size-1.5 shrink-0 rounded-full bg-lime"
                   />
                   {item}
                 </li>
