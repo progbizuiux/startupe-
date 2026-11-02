@@ -6,15 +6,19 @@ import { buttonVariants } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 
 /**
- * Closing CTA banner (Figma): full-width indigo band. Left: white heading,
- * description and two white pill buttons. Right: a scattered cluster of circular
+ * Closing CTA banner (Figma): full-width lime band. Left: near-black heading,
+ * description and two black pill buttons. Right: a scattered cluster of circular
  * portraits over faint curved lines.
+ *
+ * Near-black on lime, not white. Lime is a very light hue - white on it is
+ * 1.54:1 and unreadable, near-black is 10.6:1. That is the only direction this
+ * colour works in, so every piece of copy here is dark.
  *
  * That art comes from `cta.background` when one is set - a single wide image
  * sitting behind the whole band from lg, anchored to its right edge so the
- * portraits stay in frame and the copy keeps the empty blue on the left. Phones
- * drop the image entirely and keep the band as flat blue, since a cluster that
- * size is only decoration on a screen that narrow. Without a background image
+ * portraits stay in frame and the copy keeps the empty field on the left. Phones
+ * drop the image entirely and keep the band flat, since a cluster that size is
+ * only decoration on a screen that narrow. Without a background image
  * the cluster is composed in code from `cta.avatars`, with the positions/sizes
  * as percentages (see src/data/cta.js) so it scales with the viewport instead of
  * reflowing.
@@ -29,24 +33,24 @@ import { Container } from "@/components/ui/container";
 export function Cta() {
   if (cta.background?.src) {
     return (
-      /* the art is painted on its own blue, not the brand indigo, so the band
-         takes that colour where the image does not reach - otherwise the copy
-         area and the image below it are two different blues on phones */
+      /* The art carries its own field colour, so the band takes that colour
+         where the image does not reach - otherwise the copy area and the image
+         below it are two different shades on phones. */
       <section
         id="cta"
         style={cta.background.color ? { backgroundColor: cta.background.color } : undefined}
-        className="relative overflow-hidden bg-lime py-10 last:mb-section lg:py-0"
+        className="relative overflow-hidden bg-brand-500 py-10 last:mb-section lg:py-0"
       >
         <Container className="relative z-10">
-          <div className="text-background lg:flex lg:min-h-[381px] lg:max-w-[46%] lg:flex-col lg:justify-center lg:py-10">
+          <div className="text-foreground lg:flex lg:min-h-[381px] lg:max-w-[46%] lg:flex-col lg:justify-center lg:py-10">
             <h2 className="max-w-[22ch] leading-snug">{cta.heading}</h2>
-            <p className="mt-6 max-w-[46ch] text-background/80">{cta.description}</p>
+            <p className="mt-6 max-w-[46ch] text-foreground/70">{cta.description}</p>
             <div className="mt-7 flex flex-wrap gap-4">
               {cta.buttons.map((button) => (
                 <Link
                   key={button.href}
                   href={button.href}
-                  className={cn(buttonVariants({ variant: "light", size: "md" }))}
+                  className={cn(buttonVariants({ variant: "dark", size: "md" }))}
                 >
                   {button.label}
                 </Link>
@@ -77,21 +81,21 @@ export function Cta() {
   }
 
   return (
-    <section id="cta" className="overflow-hidden bg-lime py-10 last:mb-section lg:py-0">
+    <section id="cta" className="overflow-hidden bg-brand-500 py-10 last:mb-section lg:py-0">
       <Container>
         {/* From lg the cluster sets the band height (Figma: 381px); the copy keeps
             its own padding so it never touches the edges on narrower screens. */}
         <div className="grid items-center gap-12 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-10">
           {/* Copy */}
-          <div className="text-background lg:py-10">
+          <div className="text-foreground lg:py-10">
             <h2 className="max-w-[22ch] leading-snug">{cta.heading}</h2>
-            <p className="mt-6 max-w-[46ch] text-background/80">{cta.description}</p>
+            <p className="mt-6 max-w-[46ch] text-foreground/70">{cta.description}</p>
             <div className="mt-7 flex flex-wrap gap-4">
               {cta.buttons.map((button) => (
                 <Link
                   key={button.href}
                   href={button.href}
-                  className={cn(buttonVariants({ variant: "light", size: "md" }))}
+                  className={cn(buttonVariants({ variant: "dark", size: "md" }))}
                 >
                   {button.label}
                 </Link>
@@ -101,29 +105,10 @@ export function Cta() {
 
           {/* Avatar cluster */}
           <div className="relative aspect-[534/264] w-full">
-            {/* decorative curves behind the photos */}
-            <svg
-              viewBox="0 0 534 264"
-              fill="none"
-              aria-hidden="true"
-              className="absolute inset-0 size-full text-background/20"
-            >
-              <path
-                d="M394 -30C470 10 508 60 498 104c-10 44-86 44-120 78-34 34-10 96-70 118"
-                stroke="currentColor"
-                strokeWidth="2"
-              />
-              <path
-                d="M300 300c-40-52-6-104 40-128 46-24 118-14 160-70"
-                stroke="currentColor"
-                strokeWidth="2"
-              />
-            </svg>
-
             {cta.avatars.map((avatar) => (
               <span
                 key={avatar.src}
-                className="absolute block -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-full bg-background/10 ring-2 ring-background/30"
+                className="absolute block -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-full bg-background/40 ring-2 ring-background"
                 style={{
                   left: `${avatar.x}%`,
                   top: `${avatar.y}%`,

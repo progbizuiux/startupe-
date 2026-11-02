@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="1160.0 -1120.0 345 345">
+  <!--
+    Startup E+ favicon: the "e+" mark lifted out of the full lockup.
+
+    Only the mark, not the lockup. The full logo is 4:1 with an "AN INITIATIVE
+    BY SHAFI PARAMBIL MP" line under it, and at 32px that is an illegible smear.
+
+    Dark tile, and the mark taken from the REVERSED artboard: the "e" is a white
+    hexagon and the "+" is the bright lime, so on a light tile the "e" would
+    vanish. Dark also holds up against both light and dark browser chrome.
+
+    The square is 345 against a 261x241 mark - roughly 12% padding - because a
+    64px corner radius cuts into the box and the "+" sits in the top-right.
+  -->
+  <rect x="1160.0" y="-1120.0" width="345" height="345" rx="74" fill="#111111"/>
+  <g>
+    <path d="M1333.061-902.95v-38.822l-29.455-29.518h-64.572l-11.618,11.644l-9.164,9.183l-8.673,8.692v48.29l29.455,29.518h94.027
+					v-29.518h-94.027v-9.468H1333.061z M1303.606-941.772v9.304h-64.572v-9.304H1303.606z"/>
+    <path style="fill:none;stroke:#FFFFFF;stroke-width:1.3956;stroke-miterlimit:10;" d="M1370.677-914.375v88.107h-104.293
+			c-21.34-21.387-42.717-42.813-64.06-64.197c0.02-12.822-0.047-55.761-0.047-55.761l32.677-32.335h71.663
+			C1327.972-957.177,1349.319-935.754,1370.677-914.375z"/>
+    <path style="fill:#FFFFFF;" d="M1333.061-902.95v-38.822l-29.455-29.518h-64.572l-11.618,11.644l-9.164,9.183l-8.673,8.692
+					v48.29l29.455,29.518h94.027v-29.518h-94.027v-9.468H1333.061z M1303.606-941.772v9.304h-64.572v-9.304H1303.606z"/>
+    <path style="fill:none;stroke:#FFFFFF;stroke-width:1.3956;stroke-miterlimit:10;" d="M1438.606-1023.249h-19.914v-19.957
+			c-0.892-0.894-24.432-24.484-24.432-24.484c-0.956,0-37.701,0-39.499,0v44.441h-44.346v39.584l24.431,24.484l0,0
+			c0,0,19.914,0,19.914,0c0,3.034,0,17.242,0,19.957c9.334,9.355,24.167,24.219,24.431,24.484h39.499v-44.441h44.346v-38.289v-1.296
+			L1438.606-1023.249z"/>
+    <path style="fill:#FFFFFF;" d="M1360.604-1017.394v-44.441h27.814v44.441h44.346v27.875h-44.346v44.441h-27.814v-44.441h-44.346
+				v-27.875H1360.604z"/>
+    <path style="fill:#B5E000;" d="M1360.604-1017.394v-44.441h27.814v44.441h44.346v27.875h-44.346v44.441h-27.814v-44.441h-44.346
+				v-27.875H1360.604z"/>
+  </g>
+</svg>

@@ -1,13 +1,20 @@
 /**
  * Closing CTA banner ("Build Your Future with the Right Support").
  *
- * background: the exported band art, used as the banner's own background - the
- *   copy sits over its empty left half. Put the file in public/images/ and point
- *   `src` at it; a wide image (roughly 4:1, avatars on the right) is what the
- *   layout expects. `color` is the flat blue the art is painted on - the band
- *   uses it wherever the image does not reach (the copy on phones), since it is
- *   a different blue from the brand indigo. Set `background: null` to go back to
- *   the avatar cluster that is composed in code from `avatars` below.
+ * background: an exported band image, used as the banner's own background -
+ *   the copy sits over its empty left half. Put the file in public/images/ and
+ *   point `src` at it; a wide image (roughly 4:1, avatars on the right) is what
+ *   the layout expects. `color` is the flat colour the art is painted on, used
+ *   wherever the image does not reach (the copy area on phones).
+ *
+ *   It is null today. The old art (cta-bg.webp) had the previous brand blue
+ *   baked into it along with the faces, so it could not follow the site to the
+ *   lime palette - recolouring the field would have taken the skin tones with
+ *   it. With no image the cluster is composed in code from `avatars` below and
+ *   the band is a plain CSS colour, which does follow the theme.
+ *
+ *   To use art again: export it on the lime (#add036), drop it in, and set
+ *   `color` to match. The copy on that art is near-black, not white.
  *
  * avatars: one entry per circular photo in that composed cluster - the fallback,
  *   only rendered when `background` is null.
@@ -29,7 +36,7 @@ export const cta = {
     { label: "I Run a Business", href: "/register/beginner" },
   ],
 
-  background: { src: "/images/cta-bg.webp", color: "#3562f0" },
+  background: null,
 
   /* Cluster box is 534 x 264 in the design (aspect ~2.02) */
   avatars: [

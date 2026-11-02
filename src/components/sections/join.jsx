@@ -17,8 +17,19 @@ export function Join() {
     <section id="join" className="section-y">
       <Container>
         <div className="grid gap-12 lg:grid-cols-[50.5%_1fr] lg:gap-x-0">
-          {/* Intro */}
-          <div className="lg:pl-[3.2vw]">
+          {/* Intro.
+
+              From lg it sticks below the header while the five steps scroll
+              past, so the heading and the "Register Now" button stay with the
+              step being read - the same treatment the story heading gets on
+              /about and the portal intro on /register/*.
+
+              `lg:self-start` is what makes it work, not decoration: a grid item
+              stretches to the row height by default, and an item as tall as its
+              track has no room left to move against, so the sticky never
+              engages. Below lg none of it applies and the intro simply sits
+              above the timeline. */}
+          <div className="lg:sticky lg:top-[calc(var(--header-height)+2rem)] lg:self-start lg:pl-[3.2vw]">
             <h2 className="text-h3">{join.heading}</h2>
             <p className="mt-5 max-w-[40rem]">{join.description}</p>
             <Link
