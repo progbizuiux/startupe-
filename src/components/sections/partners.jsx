@@ -43,8 +43,13 @@ export function Partners() {
                   className={
                     /* tighter vertical than horizontal padding: most of these
                        marks are square, so it is the card's height that decides
-                       how big they come out */
-                    "mr-[clamp(1rem,2.2vw,2rem)] h-[clamp(5rem,9.7vw,9.25rem)] w-[clamp(9.5rem,17.6vw,16.75rem)] shrink-0 rounded-card bg-muted px-6 py-3 sm:mr-0 sm:px-8 sm:py-6 " +
+                       how big they come out.
+
+                       The width was sized for four logos; at five they wrapped
+                       4 + 1, which reads as a mistake rather than a row. The vw
+                       figure is what makes five fit on one line - the 9.5rem
+                       floor is untouched, so the phone marquee is unchanged. */
+                    "mr-[clamp(1rem,2.2vw,2rem)] h-[clamp(5rem,9.7vw,9.25rem)] w-[clamp(9.5rem,15.5vw,13.5rem)] shrink-0 rounded-card bg-muted px-6 py-3 sm:mr-0 sm:px-8 sm:py-6 " +
                     (isCopy ? "sm:hidden" : "")
                   }
                 >
