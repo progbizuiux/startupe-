@@ -55,18 +55,36 @@ export function Message() {
               screen. From lg it moves back into the left column and keeps the
               Figma 480 x 546 ratio at 86% of that column. */}
           <div className="relative mx-auto aspect-[480/546] w-full overflow-hidden rounded-card-lg bg-brand-500/11 sm:max-w-[22rem] lg:order-first lg:mx-0 lg:w-[86%] lg:max-w-none lg:justify-self-end">
-            {/* The portrait is bottom-aligned inside this inset, which leaves the
-                headroom the design keeps above the head (Figma: ~9% of the card).
-                next/image `fill` writes inset:0 inline, so the offset has to live
-                on a wrapper rather than a class on the image itself. */}
-            <div className="absolute inset-x-0 top-[var(--portrait-headroom,9%)] bottom-0">
+            {/* Two different pictures, two different treatments.
+
+                A CUT-OUT ("contain") is bottom-aligned inside an inset, which
+                leaves the headroom the design keeps above the head (Figma: ~9%
+                of the card) and lets the tinted card show around him.
+                next/image `fill` writes inset:0 inline, so that offset has to
+                live on a wrapper rather than a class on the image itself.
+
+                A NORMAL PHOTO ("cover") fills the card edge to edge instead -
+                inset into the headroom it would leave a band of tint above a
+                rectangular photo, which reads as a mistake. It is anchored to
+                the top because this card is narrower than the photo: cover
+                crops about a quarter of the height, and from the centre that
+                takes the top of his head. */}
+            <div
+              className={
+                image.fit === "contain"
+                  ? "absolute inset-x-0 top-[var(--portrait-headroom,9%)] bottom-0"
+                  : "absolute inset-0"
+              }
+            >
               <Image
                 src={image.src}
                 alt={image.alt}
                 fill
                 sizes="(min-width: 64rem) 38vw, (min-width: 40rem) 22rem, 100vw"
                 className={cn(
-                  image.fit === "contain" ? "object-contain object-bottom" : "object-cover",
+                  image.fit === "contain"
+                    ? "object-contain object-bottom"
+                    : "object-cover object-top",
                 )}
               />
             </div>

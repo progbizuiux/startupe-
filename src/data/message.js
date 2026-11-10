@@ -15,8 +15,11 @@ export const message = {
   name: "Shafi Parambil MP",
   role: "Member of Parliament, Vadakara",
   image: {
-    src: "/images/shafi-parambil.webp",
-    alt: "Shafi Parambil MP giving a thumbs up",
-    fit: "contain",
+    /* A normal photo, background and all - so "cover", which fills the card
+       edge to edge. "contain" is for a cut-out with a transparent background,
+       where the tinted card is meant to show around the person. */
+    src: "/images/shafi-parambil.jpg",
+    alt: "Shafi Parambil MP, arms folded",
+    fit: "cover",
   },
 };
