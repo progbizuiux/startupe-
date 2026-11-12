@@ -43,8 +43,13 @@ export const SECTORS = [
   "Deep Tech / Software",
   "Retail / Ecommerce",
   "Healthcare",
+  "Education",
   "Creative / Media",
   "Traditional Crafts",
+  /* Last, and last for a reason: an "Other" offered earlier in a list gets
+     picked by people who would have found their sector two lines further
+     down. */
+  "Other",
 ];
 
 export const PRIMARY_NEEDS = [

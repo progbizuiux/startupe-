@@ -4,7 +4,7 @@
  * The mentor avatars are still Unsplash placeholders - swap `src` for real files.
  */
 /* Hero gallery photos from the launch event; see public/images/home-page/ */
-const home = (name) => `/images/home-page/${name}.webp`;
+const home = (name, ext = "webp") => `/images/home-page/${name}.${ext}`;
 
 const unsplash = (id, w = 1000) =>
   `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=80`;
@@ -61,15 +61,19 @@ export const hero = {
         },
       ],
     },
-    
+
     {
       width: 538,
       /* the lead photo on phones, where the five-column strip collapses to one */
       mobile: true,
       images: [
         {
-          src: home("indrodection"),
-          alt: "Shafi Parambil MP arriving at the Startup E+ launch",
+          /* A silent loop rather than a still: the Startup Vandi on the road,
+             trimmed out of the launch film. `poster` is its first frame and is
+             what ships in the HTML - see hero-video.jsx. */
+          video: home("startup-vandi", "mp4"),
+          poster: home("startup-vandi-poster"),
+          alt: "The Startup E+ Vandi on the road at the launch",
           height: 583,
         },
       ],

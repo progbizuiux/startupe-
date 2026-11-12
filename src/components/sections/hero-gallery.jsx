@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { HeroVideo } from "@/components/sections/hero-video";
 
 /**
  * Photo strip (Figma): 5 bottom-aligned columns of 1-2 rounded photos filling the
@@ -37,7 +38,7 @@ export function HeroGallery({ columns, className }) {
         >
           {col.images.map((img, j) => (
             <div
-              key={img.src}
+              key={img.src ?? img.video}
               /* only the lead column renders below md, and only its first photo */
               className={cn(
                 "relative overflow-hidden rounded-card bg-muted",
@@ -46,14 +47,26 @@ export function HeroGallery({ columns, className }) {
               )}
               style={{ "--ar": `${col.width}/${img.height}` }}
             >
-              <Image
-                src={img.src}
-                alt={img.alt}
-                fill
-                sizes="(max-width: 768px) 92vw, 30vw"
-                quality={90}
-                className="object-cover"
-              />
+              {/* A tile is a photo unless the entry carries a `video`, in which
+                  case it is a silent loop - see hero-video.jsx for what happens
+                  under reduced motion. */}
+              {img.video ? (
+                <HeroVideo
+                  src={img.video}
+                  poster={img.poster}
+                  alt={img.alt}
+                  sizes="(max-width: 768px) 92vw, 30vw"
+                />
+              ) : (
+                <Image
+                  src={img.src}
+                  alt={img.alt}
+                  fill
+                  sizes="(max-width: 768px) 92vw, 30vw"
+                  quality={90}
+                  className="object-cover"
+                />
+              )}
             </div>
           ))}
         </div>
