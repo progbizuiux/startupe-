@@ -48,7 +48,7 @@ export const siteConfig = {
      number, or the site ends up with two of them that drift apart. */
   contact: {
     email: "startupvadakara@gmail.com",
-    phones: ["+91 88917 44957"],
+    phones: ["+91 88917 44957", "+91 80861 44419"],
     /* The same line, confirmed as reachable on WhatsApp. Set it to null if that
        ever stops being true: the contact page drops the WhatsApp channel card
        and the "WhatsApp" reply option on its own rather than linking into a

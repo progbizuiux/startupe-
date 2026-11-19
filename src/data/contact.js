@@ -17,7 +17,7 @@ const waLink = (number) => `https://wa.me/${number.replace(/\D/g, "")}`;
 const telLink = (number) => `tel:${number.replace(/[^\d+]/g, "")}`;
 
 const email = siteConfig.contact.email;
-const phone = siteConfig.contact.phones[0];
+const phones = siteConfig.contact.phones;
 const whatsapp = siteConfig.contact.whatsapp;
 
 /**
@@ -121,12 +121,16 @@ export const contact = {
         href: whatsapp ? waLink(whatsapp) : null,
         external: true,
       },
-      {
+      /* One card per number, not just the first. The footer already listed
+         every entry in siteConfig.contact.phones, so a second number showed up
+         there and nowhere else - which reads as the contact page being out of
+         date rather than as a deliberate choice. */
+      ...phones.map((number) => ({
         icon: "phone",
         label: "Phone",
-        value: phone,
-        href: telLink(phone),
-      },
+        value: number,
+        href: telLink(number),
+      })),
     ],
 
     /* Empty on purpose - there are no confirmed opening hours on file. Fill it
