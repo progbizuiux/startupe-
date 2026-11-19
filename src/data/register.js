@@ -30,7 +30,7 @@ export const registration = {
      numbers the moment one of them was edited, and the number is the part
      people hold us to. */
   responseTime:
-    "Once you register, expect to hear from us in about 30 days - we are working through registrations in order.",
+    "Every registration is read by our team, and we will get back to you in about 30 days. There is no need to follow up in the meantime - we will come to you.",
 
   notice: {
     heading: "Registration is paused for now",
