@@ -1,6 +1,7 @@
-import { aspirant } from "@/data/register";
+import { aspirant, registration } from "@/data/register";
 import { PortalLayout } from "@/components/sections/portal-intro";
 import { AspirantForm } from "@/components/sections/aspirant-form";
+import { RegistrationClosed } from "@/components/sections/registration-closed";
 
 export const metadata = {
   title: "Register — The Aspirant",
@@ -12,7 +13,9 @@ export const metadata = {
 export default function AspirantPage() {
   return (
     <PortalLayout portal={aspirant}>
-      <AspirantForm />
+      {/* One switch in src/data/register.js, so reopening is a one-line change
+          and the form below is never edited to close it. */}
+      {registration.paused ? <RegistrationClosed /> : <AspirantForm />}
     </PortalLayout>
   );
 }

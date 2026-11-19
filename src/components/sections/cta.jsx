@@ -1,9 +1,8 @@
 import Image from "next/image";
-import Link from "next/link";
 import { cta } from "@/data/cta";
-import { cn } from "@/lib/utils";
-import { buttonVariants } from "@/components/ui/button";
+import { registration } from "@/data/register";
 import { Container } from "@/components/ui/container";
+import { CtaButtons } from "@/components/sections/cta-buttons";
 
 /**
  * Closing CTA banner (Figma): full-width lime band. Left: near-black heading,
@@ -46,15 +45,11 @@ export function Cta() {
             <h2 className="max-w-[22ch] leading-snug">{cta.heading}</h2>
             <p className="mt-6 max-w-[46ch] text-foreground/70">{cta.description}</p>
             <div className="mt-7 flex flex-wrap gap-4">
-              {cta.buttons.map((button) => (
-                <Link
-                  key={button.href}
-                  href={button.href}
-                  className={cn(buttonVariants({ variant: "dark", size: "md" }))}
-                >
-                  {button.label}
-                </Link>
-              ))}
+              <CtaButtons
+                buttons={cta.buttons}
+                paused={registration.paused}
+                notice={registration.notice}
+              />
             </div>
           </div>
         </Container>
@@ -91,15 +86,11 @@ export function Cta() {
             <h2 className="max-w-[22ch] leading-snug">{cta.heading}</h2>
             <p className="mt-6 max-w-[46ch] text-foreground/70">{cta.description}</p>
             <div className="mt-7 flex flex-wrap gap-4">
-              {cta.buttons.map((button) => (
-                <Link
-                  key={button.href}
-                  href={button.href}
-                  className={cn(buttonVariants({ variant: "dark", size: "md" }))}
-                >
-                  {button.label}
-                </Link>
-              ))}
+              <CtaButtons
+                buttons={cta.buttons}
+                paused={registration.paused}
+                notice={registration.notice}
+              />
             </div>
           </div>
 

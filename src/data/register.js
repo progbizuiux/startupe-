@@ -8,6 +8,33 @@
  * a district here is enough - validation follows automatically.
  */
 
+/**
+ * The pause switch for BOTH portals.
+ *
+ * While `paused` is true, /register/aspirant and /register/beginner render the
+ * notice below instead of their form. Set it to false to reopen - the forms,
+ * their schemas and /api/register are untouched and come straight back.
+ *
+ * Note that /api/register stays open either way: this closes the two forms on
+ * the website, not the endpoint the mobile app posts to.
+ */
+export const registration = {
+  paused: true,
+
+  notice: {
+    heading: "Registration is paused for now",
+    body: [
+      "We are reading through every idea that has come in so far, so that each one gets a proper look rather than a quick one. We expect that to take about 15 more days.",
+      "Registration opens again as soon as the review is finished - do come back then.",
+    ],
+    submitted:
+      "Already registered? Your submission is safely in the queue and is part of this review. There is no need to send it again.",
+    /* A closed page with nothing to do on it is the unfriendly part, so it
+       keeps one way through to a person. */
+    help: { label: "Talk to the team", href: "/contact" },
+  },
+};
+
 export const KERALA_DISTRICTS = [
   "Alappuzha",
   "Ernakulam",
