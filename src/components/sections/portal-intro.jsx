@@ -1,3 +1,5 @@
+import { Clock } from "lucide-react";
+import { registration } from "@/data/register";
 import { Container } from "@/components/ui/container";
 
 /**
@@ -39,7 +41,20 @@ export function PortalLayout({ portal, children }) {
             </ul>
           </div>
 
-          {children}
+          {/* The form column. The turnaround note sits above the fields rather
+              than on the confirmation panel, so it reaches someone while they
+              are still deciding whether to start - and it is suppressed while
+              registration is paused, where promising a reply in 30 days would
+              contradict the notice sitting directly below it. */}
+          <div className="flex flex-col gap-6">
+            {!registration.paused && (
+              <p className="flex gap-3 rounded-card border border-border bg-muted p-5 text-small text-muted-foreground">
+                <Clock aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-lime-ink" />
+                <span>{registration.responseTime}</span>
+              </p>
+            )}
+            {children}
+          </div>
         </div>
       </Container>
     </section>

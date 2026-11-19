@@ -21,12 +21,16 @@
 export const registration = {
   paused: false,
 
-  /* Shown on both portals' "Registration received" panel. One string, because
-     the two panels would otherwise quote different turnarounds the moment one
-     of them is edited - and the number is the part people actually hold us to.
-     Change it here and both follow. */
+  /* Shown at the top of both portals' form, before anything is filled in -
+     not on the confirmation afterwards. Someone deciding whether to start a
+     form this long deserves to know the turnaround while they can still act on
+     it; told at the end, it is news they can do nothing with.
+
+     One string rather than a copy per portal: the two would quote different
+     numbers the moment one of them was edited, and the number is the part
+     people hold us to. */
   responseTime:
-    "We are working through registrations in order, so expect to hear from us in about 30 days.",
+    "Once you register, expect to hear from us in about 30 days - we are working through registrations in order.",
 
   notice: {
     heading: "Registration is paused for now",
