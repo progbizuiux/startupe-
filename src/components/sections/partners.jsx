@@ -6,18 +6,25 @@ import { Container } from "@/components/ui/container";
  * "Built with Kerala's best" (Figma): centred eyebrow, ~65px below it a strip of
  * light-grey logo cards (~268 x 147px at 1520, ~33px apart).
  *
- * Two behaviours from one list:
- *   - phones: the cards do not fit on a line, so rather than wrapping to a 2x2
- *     block they run edge to edge as a marquee. The list is rendered twice and
- *     the track slides by exactly half its width, which is why the spacing there
- *     is a margin on each card and not a flex `gap` - a gap would add half a gap
- *     of drift on every loop. The second copy is hidden from screen readers.
- *   - sm and up: all four sit still in one centred row, so there is nothing
- *     moving and no pause control to offer. The duplicate copy is dropped.
+ * The strip scrolls at every width. The list is rendered twice and the track
+ * slides by exactly half its width, which is why the spacing is a margin on
+ * each card and not a flex `gap` - a gap would add half a gap of drift on
+ * every loop. The second copy is hidden from screen readers.
  *
- * It stays a server component: the animation and the switch between the two are
- * pure CSS, and it pauses on hover / keyboard focus and under
- * prefers-reduced-motion, where the strip becomes a static row you can swipe.
+ * Because the two copies are adjacent, the loop is seamless at any viewport,
+ * including one wider than a single copy of the list.
+ *
+ * It runs slower above sm than on a phone in wall-clock terms, because the
+ * cards are bigger there: 30s rather than 20s keeps the logos moving past at
+ * roughly the same speed on the screen, which is what the eye actually reads.
+ *
+ * Under prefers-reduced-motion it is not a slowed-down marquee but a different
+ * thing: a still, centred, wrapped row with the duplicate copy dropped, which
+ * is the layout this strip had before it scrolled. A marquee that merely
+ * stopped would leave a half-scrolled track clipped mid-logo.
+ *
+ * It stays a server component: all of this is CSS, and the animation pauses on
+ * hover and on keyboard focus.
  *
  * Content lives in src/data/partners.js - any number of logos works.
  */
@@ -29,10 +36,10 @@ export function Partners() {
       <span className="eyebrow text-muted-foreground">{partners.eyebrow}</span>
 
       <Container className="mt-[clamp(1.75rem,4.3vw,4.0625rem)]">
-        <div className="-mx-gutter no-scrollbar overflow-hidden motion-reduce:overflow-x-auto sm:mx-0 sm:overflow-visible">
+        <div className="-mx-gutter no-scrollbar overflow-hidden motion-reduce:mx-0 motion-reduce:overflow-visible">
           <ul
             role="list"
-            className="flex w-max animate-marquee items-center focus-within:[animation-play-state:paused] hover:[animation-play-state:paused] motion-reduce:animate-none sm:w-full sm:animate-none sm:flex-wrap sm:justify-center sm:gap-[clamp(1rem,2.2vw,2rem)]"
+            className="flex w-max animate-marquee items-center focus-within:[animation-play-state:paused] hover:[animation-play-state:paused] motion-reduce:w-full motion-reduce:animate-none motion-reduce:flex-wrap motion-reduce:justify-center motion-reduce:gap-[clamp(1rem,2.2vw,2rem)] sm:[animation-duration:30s]"
           >
             {loop.map((logo, i) => {
               const isCopy = i >= partners.logos.length;
@@ -45,12 +52,13 @@ export function Partners() {
                        marks are square, so it is the card's height that decides
                        how big they come out.
 
-                       The width was sized for four logos; at five they wrapped
-                       4 + 1, which reads as a mistake rather than a row. The vw
-                       figure is what makes five fit on one line - the 9.5rem
-                       floor is untouched, so the phone marquee is unchanged. */
-                    "mr-[clamp(1rem,2.2vw,2rem)] h-[clamp(5rem,9.7vw,9.25rem)] w-[clamp(9.5rem,15.5vw,13.5rem)] shrink-0 rounded-card bg-muted px-6 py-3 sm:mr-0 sm:px-8 sm:py-6 " +
-                    (isCopy ? "sm:hidden" : "")
+                       The margin is what spaces the cards, at every width - the
+                       track is measured in whole copies of the list, so the
+                       spacing has to belong to the card rather than sit between
+                       cards as a flex gap. Only the reduced-motion layout, which
+                       does not loop, can afford a real gap. */
+                    "mr-[clamp(1rem,2.2vw,2rem)] h-[clamp(5rem,9.7vw,9.25rem)] w-[clamp(9.5rem,15.5vw,13.5rem)] shrink-0 rounded-card bg-muted px-6 py-3 motion-reduce:mr-0 sm:px-8 sm:py-6 " +
+                    (isCopy ? "motion-reduce:hidden" : "")
                   }
                 >
                   {/* a contain box rather than a fixed logo height: the real logos
