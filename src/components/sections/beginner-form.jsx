@@ -13,6 +13,7 @@ import {
   OPERATIONAL_HURDLES,
   REGISTRATION_TYPES,
   beginner,
+  registration,
 } from "@/data/register";
 import { beginnerSchema } from "@/lib/register-schema";
 import { cn } from "@/lib/utils";
@@ -87,6 +88,11 @@ export function BeginnerForm() {
           Thanks for registering. The Startup E+ team will follow up on mentoring, compliance
           support and the KSUM seed capital routes open to you.
         </p>
+        {/* The turnaround, on its own line rather than tacked onto the sentence
+            above: "when do I hear back, and do I have to chase them" is the
+            question someone has at this moment, and it should not arrive as the
+            tail of a longer one. */}
+        <p className="mt-3 text-muted-foreground">{registration.responseTime}</p>
       </div>
     );
   }

@@ -15,6 +15,7 @@ import {
   PRIMARY_NEEDS,
   SECTORS,
   aspirant,
+  registration,
 } from "@/data/register";
 import { aspirantSchema, countWords } from "@/lib/register-schema";
 import { cn } from "@/lib/utils";
@@ -96,6 +97,11 @@ export function AspirantForm() {
           Thanks for registering. The Startup E+ team will be in touch on WhatsApp with your nearest
           Campus E-Club and the next Zonal Idea Hackathon date.
         </p>
+        {/* The turnaround, on its own line rather than tacked onto the sentence
+            above: "when do I hear back, and do I have to chase them" is the
+            question someone has at this moment, and it should not arrive as the
+            tail of a longer one. */}
+        <p className="mt-3 text-muted-foreground">{registration.responseTime}</p>
       </div>
     );
   }

@@ -21,10 +21,10 @@
 export const registration = {
   paused: false,
 
-  /* Shown at the top of both portals' form, before anything is filled in -
-     not on the confirmation afterwards. Someone deciding whether to start a
-     form this long deserves to know the turnaround while they can still act on
-     it; told at the end, it is news they can do nothing with.
+  /* Shown on both portals' "Registration received" panel, once a registration
+     is actually in - not above the form. It answers the two things someone
+     wants to know the moment they have pressed submit: when they will hear
+     back, and whether they are expected to chase it.
 
      One string rather than a copy per portal: the two would quote different
      numbers the moment one of them was edited, and the number is the part
