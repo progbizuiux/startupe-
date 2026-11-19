@@ -80,7 +80,10 @@ export function AspirantForm() {
       });
       if (!res.ok) throw new Error(`Request failed (${res.status})`);
       setSubmitted(true);
-      toast.success("Registration received.");
+      /* Same string as the panel heading: the toast and the panel appear at
+         the same moment, and two different wordings for one event reads as two
+         things having happened. */
+      toast.success(`${registration.receivedHeading}.`);
     } catch {
       toast.error(
         `Could not send your registration. Please try again, or email ${siteConfig.contact.email}.`,
@@ -92,11 +95,8 @@ export function AspirantForm() {
     return (
       <div ref={doneRef} className="rounded-card border border-border bg-muted p-8">
         <CircleCheckBig aria-hidden="true" className="size-9 text-primary" />
-        <h2 className="mt-4 text-h5">Registration received</h2>
-        <p className="mt-3 text-muted-foreground">
-          Thanks for registering. The Startup E+ team will be in touch on WhatsApp with your nearest
-          Campus E-Club and the next Zonal Idea Hackathon date.
-        </p>
+        <h2 className="mt-4 text-h5">{registration.receivedHeading}</h2>
+        <p className="mt-3 text-muted-foreground">{aspirant.confirmation}</p>
         {/* The turnaround, on its own line rather than tacked onto the sentence
             above: "when do I hear back, and do I have to chase them" is the
             question someone has at this moment, and it should not arrive as the

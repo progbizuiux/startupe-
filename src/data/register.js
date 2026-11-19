@@ -29,6 +29,11 @@ export const registration = {
      One string rather than a copy per portal: the two would quote different
      numbers the moment one of them was edited, and the number is the part
      people hold us to. */
+  /* The heading on that panel. "Registration received" was accurate and cold;
+     what someone wants in that half-second is confirmation it actually went
+     through, said the way a person would say it. */
+  receivedHeading: "Thanks, we have your registration",
+
   responseTime:
     "Every registration is read by our team, and we will get back to you in about 30 days. There is no need to follow up in the meantime - we will come to you.",
 
@@ -112,6 +117,12 @@ export const aspirant = {
     "Basic entrepreneurship toolkits",
   ],
 
+  /* First line of the "Thanks, we have your registration" panel. It names what
+     they actually gave us - an idea - rather than the act of filling a form,
+     and says who gets in touch and about what. */
+  confirmation:
+    "Thanks for sharing your idea with us. The Startup E+ team will be in touch on WhatsApp with your nearest Campus E-Club and the date of the next Zonal Idea Hackathon.",
+
   /* Shown next to the mandatory acknowledgment checkbox */
   ipTerms:
     "I acknowledge the standard Non-Disclosure and Intellectual Property protection terms, and confirm the idea submitted is my own.",
@@ -156,6 +167,9 @@ export const beginner = {
     "Seed capital guidance via KSUM and state schemes",
     "Initial customer access channels",
   ],
+
+  confirmation:
+    "Thanks for telling us about your business. The Startup E+ team will be in touch about mentoring, compliance support and the KSUM seed capital routes open to you.",
 
   ipTerms:
     "I acknowledge the standard Non-Disclosure and Intellectual Property protection terms, and confirm I am authorised to submit these details on behalf of the entity.",
