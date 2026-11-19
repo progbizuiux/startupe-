@@ -4,6 +4,7 @@ import { AboutPhases } from "@/components/sections/about-phases";
 import { AboutAudience } from "@/components/sections/about-audience";
 import { Partners } from "@/components/sections/partners";
 import { Join } from "@/components/sections/join";
+import { Sponsors } from "@/components/sections/sponsors";
 import { Message } from "@/components/sections/message";
 import { Faq } from "@/components/sections/faq";
 import { Cta } from "@/components/sections/cta";
@@ -37,6 +38,14 @@ export default function HomePage() {
       <AboutAudience />
       <Partners />
       <Join />
+      {/* After <Join />, not next to <Partners />. Both are rows of logos, and
+          back to back they read as one strip that someone has duplicated - the
+          steps in between are what separate them into two statements: who we
+          build this with, and who pays for it.
+
+          It renders nothing until src/data/sponsors.js has entries, so it is
+          safe sitting here while that list is still empty. */}
+      <Sponsors />
       <Cta />
       {/* Last, after the CTA, so the band is what someone scrolling past the
           content hits first and the questions are there for whoever keeps
