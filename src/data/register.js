@@ -19,7 +19,14 @@
  * the website, not the endpoint the mobile app posts to.
  */
 export const registration = {
-  paused: true,
+  paused: false,
+
+  /* Shown on both portals' "Registration received" panel. One string, because
+     the two panels would otherwise quote different turnarounds the moment one
+     of them is edited - and the number is the part people actually hold us to.
+     Change it here and both follow. */
+  responseTime:
+    "We are working through registrations in order, so expect to hear from us in about 30 days.",
 
   notice: {
     heading: "Registration is paused for now",
